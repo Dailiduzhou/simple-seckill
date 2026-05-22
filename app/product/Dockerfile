@@ -26,6 +26,8 @@ WORKDIR /app
 
 COPY --from=builder /bin/product /app/product
 
+RUN mkdir -p /app/logs
+
 EXPOSE 8000 9000
 VOLUME /data/conf
 

@@ -34,6 +34,7 @@ services:
       - "9000:9000"
     volumes:
       - ./app/product/configs:/data/conf
+      - product_logs:/app/logs
     depends_on:
       - postgres
 
@@ -46,8 +47,38 @@ services:
       - "9001:9000"
     volumes:
       - ./app/user/configs:/data/conf
+      - user_logs:/app/logs
     depends_on:
       - postgres
 
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - ./deploy/promtail.yaml:/etc/promtail/config.yaml
+      - user_logs:/logs/user
+      - product_logs:/logs/product
+    command: -config.file=/etc/promtail/config.yaml
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    depends_on:
+      - loki
+
 volumes:
   pgdata:
+  user_logs:
+  product_logs:
+
