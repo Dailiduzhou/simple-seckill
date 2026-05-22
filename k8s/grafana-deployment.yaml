@@ -5,32 +5,30 @@ metadata:
     kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
     kompose.version: 1.38.0 (HEAD)
   labels:
-    io.kompose.service: etcd
-  name: etcd
+    io.kompose.service: grafana
+  name: grafana
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: etcd
+      io.kompose.service: grafana
   template:
     metadata:
       annotations:
         kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
         kompose.version: 1.38.0 (HEAD)
       labels:
-        io.kompose.service: etcd
+        io.kompose.service: grafana
     spec:
       containers:
         - env:
-            - name: ALLOW_NONE_AUTHENTICATION
-              value: "yes"
-            - name: ETCD_ADVERTISE_CLIENT_URLS
-              value: http://etcd:2379
-            - name: ETCD_LISTEN_CLIENT_URLS
-              value: http://0.0.0.0:2379
-          image: bitnami/etcd:3.5
-          name: etcd
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Admin
+          image: grafana/grafana:10.2.0
+          name: grafana
           ports:
-            - containerPort: 2379
+            - containerPort: 3000
               protocol: TCP
       restartPolicy: Always

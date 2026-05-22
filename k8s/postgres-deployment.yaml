@@ -1,59 +1,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+    kompose.version: 1.38.0 (HEAD)
   labels:
-    app: postgres
+    io.kompose.service: postgres
   name: postgres
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      io.kompose.service: postgres
+  strategy:
+    type: Recreate
   template:
     metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+        kompose.version: 1.38.0 (HEAD)
       labels:
-        app: postgres
+        io.kompose.service: postgres
     spec:
       containers:
-        - name: postgres
-          image: postgres:15-alpine
-          env:
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
-              value: postgres
+        - env:
             - name: POSTGRES_DB
               value: seckill
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+          image: postgres:15-alpine
+          name: postgres
           ports:
             - containerPort: 5432
-              name: pgsql
               protocol: TCP
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: pgdata
             - mountPath: /docker-entrypoint-initdb.d
-              name: init-sql
-          readinessProbe:
-            exec:
-              command: ["pg_isready", "-U", "postgres"]
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            exec:
-              command: ["pg_isready", "-U", "postgres"]
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
+              name: postgres-cm1
+      restartPolicy: Always
       volumes:
         - name: pgdata
           persistentVolumeClaim:
             claimName: pgdata
-        - name: init-sql
-          configMap:
+        - configMap:
             name: postgres-cm1
+          name: postgres-cm1

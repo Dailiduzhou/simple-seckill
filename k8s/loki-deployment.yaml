@@ -5,32 +5,27 @@ metadata:
     kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
     kompose.version: 1.38.0 (HEAD)
   labels:
-    io.kompose.service: etcd
-  name: etcd
+    io.kompose.service: loki
+  name: loki
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: etcd
+      io.kompose.service: loki
   template:
     metadata:
       annotations:
         kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
         kompose.version: 1.38.0 (HEAD)
       labels:
-        io.kompose.service: etcd
+        io.kompose.service: loki
     spec:
       containers:
-        - env:
-            - name: ALLOW_NONE_AUTHENTICATION
-              value: "yes"
-            - name: ETCD_ADVERTISE_CLIENT_URLS
-              value: http://etcd:2379
-            - name: ETCD_LISTEN_CLIENT_URLS
-              value: http://0.0.0.0:2379
-          image: bitnami/etcd:3.5
-          name: etcd
+        - args:
+            - -config.file=/etc/loki/local-config.yaml
+          image: grafana/loki:2.9.0
+          name: loki
           ports:
-            - containerPort: 2379
+            - containerPort: 3100
               protocol: TCP
       restartPolicy: Always

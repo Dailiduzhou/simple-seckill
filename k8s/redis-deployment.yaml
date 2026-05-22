@@ -1,40 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+    kompose.version: 1.38.0 (HEAD)
   labels:
-    app: redis
+    io.kompose.service: redis
   name: redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      io.kompose.service: redis
   template:
     metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+        kompose.version: 1.38.0 (HEAD)
       labels:
-        app: redis
+        io.kompose.service: redis
     spec:
       containers:
-        - name: redis
-          image: redis:7-alpine
+        - image: redis:7-alpine
+          name: redis
           ports:
             - containerPort: 6379
-              name: redis
               protocol: TCP
-          readinessProbe:
-            exec:
-              command: ["redis-cli", "ping"]
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          livenessProbe:
-            exec:
-              command: ["redis-cli", "ping"]
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          resources:
-            requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
+      restartPolicy: Always

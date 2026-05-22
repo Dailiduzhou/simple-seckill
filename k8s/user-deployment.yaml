@@ -1,18 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+    kompose.version: 1.38.0 (HEAD)
   labels:
-    app: user
+    io.kompose.service: user
   name: user
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user
+      io.kompose.service: user
+  strategy:
+    type: Recreate
   template:
     metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+        kompose.version: 1.38.0 (HEAD)
       labels:
-        app: user
+        io.kompose.service: user
     spec:
       initContainers:
         - name: wait-for-postgres
@@ -39,14 +47,14 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
-              name: http
               protocol: TCP
             - containerPort: 9000
-              name: grpc
               protocol: TCP
           volumeMounts:
             - mountPath: /data/conf
-              name: config
+              name: user-cm0
+            - mountPath: /app/logs
+              name: user-logs
           readinessProbe:
             tcpSocket:
               port: 8000
@@ -64,7 +72,11 @@ spec:
             limits:
               cpu: 500m
               memory: 256Mi
+      restartPolicy: Always
       volumes:
-        - name: config
-          configMap:
+        - configMap:
             name: user-cm0
+          name: user-cm0
+        - name: user-logs
+          persistentVolumeClaim:
+            claimName: user-logs

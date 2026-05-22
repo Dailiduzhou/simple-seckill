@@ -5,15 +5,12 @@ metadata:
     kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
     kompose.version: 1.38.0 (HEAD)
   labels:
-    io.kompose.service: user
-  name: user
+    io.kompose.service: loki
+  name: loki
 spec:
   ports:
-    - name: "8001"
-      port: 8001
-      targetPort: 8000
-    - name: "9001"
-      port: 9001
-      targetPort: 9000
+    - name: "3100"
+      port: 3100
+      targetPort: 3100
   selector:
-    io.kompose.service: user
+    io.kompose.service: loki

@@ -2,11 +2,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    io.kompose.service: pgdata
-  name: pgdata
+    io.kompose.service: user-logs
+  name: user-logs
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 100Mi

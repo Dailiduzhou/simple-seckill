@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: promtail
+  name: promtail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: promtail
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o k8s/
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: promtail
+    spec:
+      containers:
+        - args:
+            - -config.file=/etc/promtail/config.yaml
+          image: grafana/promtail:2.9.0
+          name: promtail
+          volumeMounts:
+            - mountPath: /etc/promtail/config.yaml
+              name: promtail-cm0
+              subPath: config.yaml
+            - mountPath: /logs/user
+              name: user-logs
+            - mountPath: /logs/product
+              name: product-logs
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            items:
+              - key: promtail.yaml
+                path: config.yaml
+            name: promtail-cm0
+          name: promtail-cm0
+        - name: user-logs
+          persistentVolumeClaim:
+            claimName: user-logs
+        - name: product-logs
+          persistentVolumeClaim:
+            claimName: product-logs
