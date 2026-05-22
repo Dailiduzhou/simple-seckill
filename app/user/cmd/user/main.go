@@ -6,6 +6,7 @@ import (
 
 	"seckill/app/user/internal/conf"
 	"seckill/pkg/logger"
+	"seckill/pkg/trace"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -54,6 +55,9 @@ func main() {
 
 	logger := logger.NewJSONLogger()
 	log.SetLogger(logger)
+
+	cleanupTrace := trace.InitTracer(Name)
+	defer cleanupTrace()
 
 	c := config.New(
 		config.WithSource(

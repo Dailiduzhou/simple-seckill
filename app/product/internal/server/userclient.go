@@ -5,6 +5,7 @@ import (
 
 	uv1 "seckill/api/user/v1"
 
+	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/registry"
 	transgrpc "github.com/go-kratos/kratos/v2/transport/grpc"
 )
@@ -14,6 +15,9 @@ func NewUserClient(dis registry.Discovery) uv1.UserClient {
 		context.Background(),
 		transgrpc.WithEndpoint("discovery:///user"),
 		transgrpc.WithDiscovery(dis),
+		transgrpc.WithMiddleware(
+			tracing.Client(),
+		),
 	)
 	if err != nil {
 		panic(err)

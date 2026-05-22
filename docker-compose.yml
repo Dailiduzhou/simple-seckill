@@ -77,6 +77,14 @@ services:
     depends_on:
       - loki
 
+  jaeger:
+    image: jaegertracing/all-in-one:1.68.0
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+
 volumes:
   pgdata:
   user_logs:

@@ -20,6 +20,8 @@ data:
       etcd:
         endpoints:
           - "etcd:2379"
+    trace:
+      endpoint: jaeger:4317
 kind: ConfigMap
 metadata:
   labels:
