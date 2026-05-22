@@ -22,10 +22,11 @@ import (
 
 type ProductRepo struct {
 	data *Data
+	log  *log.Helper
 }
 
-func NewProductRepo(data *Data) *ProductRepo {
-	return &ProductRepo{data: data}
+func NewProductRepo(data *Data, logger log.Logger) *ProductRepo {
+	return &ProductRepo{data: data, log: log.NewHelper(logger)}
 }
 
 func (r *ProductRepo) FindByID(ctx context.Context, ID int64) (*biz.Product, error) {
@@ -36,7 +37,7 @@ func (r *ProductRepo) FindByID(ctx context.Context, ID int64) (*biz.Product, err
 		return product, nil
 	}
 	if !stderrors.Is(err, redis.Nil) {
-		log.Errorf("Error get product cache: %v", err)
+		r.log.WithContext(ctx).Errorf("get product cache: %v", err)
 	}
 
 	sfKey := fmt.Sprintf("sf:product:%d", ID)
@@ -55,7 +56,7 @@ func (r *ProductRepo) FindByID(ctx context.Context, ID int64) (*biz.Product, err
 			return productDoublecheck, nil
 		}
 
-		log.Infof("Product %d fetching from DB", ID)
+		r.log.WithContext(ctx).Infof("product %d fetching from DB", ID)
 		dbProduct, err := r.data.q.GetProduct(ctx, ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -82,23 +83,23 @@ func (r *ProductRepo) FindByID(ctx context.Context, ID int64) (*biz.Product, err
 func (r *ProductRepo) DeductStock(ctx context.Context, userID int64, ID int64, amount int32) error {
 	product, err := r.FindByID(ctx, ID)
 	if err != nil {
-		log.Errorf("DB_ERROR: %q", err)
+		r.log.WithContext(ctx).Errorf("DeductStock: find product %d: %v", ID, err)
 		return err
 	}
 
 	if product.Stock == 0 {
-		log.Infof("Product %d sold out", product.ID)
+		r.log.WithContext(ctx).Infof("DeductStock: product %d sold out", product.ID)
 		return productv1.ErrorSoldOut("Product %d sold out", product.ID)
 	}
 
 	_, err = r.data.userclient.DeductBalance(ctx, &uv1.DeductBalanceRequest{Id: userID, Amount: int64(product.Price)})
 	if err != nil {
 		if uv1.IsUserNotFound(err) {
-			log.Errorf("User %d not found", userID)
+			r.log.WithContext(ctx).Errorf("DeductStock: user %d not found", userID)
 			return productv1.ErrorServiceBusy("User %d not found", userID)
 		}
 		if uv1.IsLowBalance(err) {
-			log.Errorf("User %d has insufficient balance", userID)
+			r.log.WithContext(ctx).Errorf("DeductStock: user %d insufficient balance", userID)
 		}
 		return err
 	}
@@ -116,7 +117,7 @@ func (r *ProductRepo) DeductStock(ctx context.Context, userID int64, ID int64, a
 
 	cacheKey := fmt.Sprintf("product:%d", ID)
 	if err := r.data.rdb.Del(ctx, cacheKey).Err(); err != nil {
-		log.Errorf("Error delete cache after deduct: %v", err)
+		r.log.WithContext(ctx).Errorf("delete product cache after deduct: %v", err)
 	}
 
 	return nil
@@ -137,7 +138,7 @@ func (r *ProductRepo) getCache(ctx context.Context, key string) (*biz.Product, e
 func (r *ProductRepo) setCache(ctx context.Context, key string, product *biz.Product) {
 	data, err := json.Marshal(product)
 	if err != nil {
-		log.Errorf("Error marshal user cache: %v", err)
+		r.log.WithContext(ctx).Errorf("marshal product cache: %v", err)
 		return
 	}
 	jitter := time.Duration(rand.Intn(10)) * time.Minute

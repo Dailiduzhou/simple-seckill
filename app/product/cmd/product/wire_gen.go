@@ -31,9 +31,9 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 	if err != nil {
 		return nil, nil, err
 	}
-	productRepo := data.NewProductRepo(dataData)
-	productUsecase := biz.NewProductUsecase(productRepo)
-	productService := service.NewProductService(productUsecase)
+	productRepo := data.NewProductRepo(dataData, logger)
+	productUsecase := biz.NewProductUsecase(productRepo, logger)
+	productService := service.NewProductService(productUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, productService, logger)
 	httpServer := server.NewHTTPServer(confServer, productService, logger)
 	registrar := server.NewRegistrar(client)

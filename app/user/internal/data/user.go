@@ -21,10 +21,11 @@ import (
 
 type UserRepo struct {
 	data *Data
+	log  *log.Helper
 }
 
-func NewUserRepo(data *Data) *UserRepo {
-	return &UserRepo{data: data}
+func NewUserRepo(data *Data, logger log.Logger) *UserRepo {
+	return &UserRepo{data: data, log: log.NewHelper(logger)}
 }
 
 func (r *UserRepo) Create(ctx context.Context) (*biz.User, error) {
@@ -43,7 +44,7 @@ func (r *UserRepo) FindByID(ctx context.Context, ID int64) (*biz.User, error) {
 		return user, nil
 	}
 	if !stderrors.Is(err, redis.Nil) {
-		log.Errorf("Error get user cache: %v", err)
+		r.log.WithContext(ctx).Errorf("get user cache: %v", err)
 	}
 
 	sfKey := fmt.Sprintf("sf:user:%d", ID)
@@ -62,7 +63,7 @@ func (r *UserRepo) FindByID(ctx context.Context, ID int64) (*biz.User, error) {
 			return userDoublecheck, nil
 		}
 
-		log.Infof("User %d fetching from DB", ID)
+		r.log.WithContext(ctx).Infof("user %d fetching from DB", ID)
 		dbUser, err := r.data.q.GetUser(ctx, ID)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -97,7 +98,7 @@ func (r *UserRepo) getCache(ctx context.Context, key string) (*biz.User, error) 
 func (r *UserRepo) setCache(ctx context.Context, key string, user *biz.User) {
 	data, err := json.Marshal(user)
 	if err != nil {
-		log.Errorf("Error marshal user cache: %v", err)
+		r.log.WithContext(ctx).Errorf("marshal user cache: %v", err)
 		return
 	}
 	jitter := time.Duration(rand.Intn(10)) * time.Minute
@@ -126,7 +127,7 @@ func (r *UserRepo) DeducBalance(ctx context.Context, ID int64, amount int32) err
 
 	cacheKey := fmt.Sprintf("user:%d", ID)
 	if err := r.data.rdb.Del(ctx, cacheKey).Err(); err != nil {
-		log.Errorf("Error delete cache after deduct: %v", err)
+		r.log.WithContext(ctx).Errorf("delete user cache after deduct: %v", err)
 	}
 
 	return nil
