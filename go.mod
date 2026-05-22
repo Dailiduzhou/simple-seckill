@@ -3,6 +3,7 @@ module seckill
 go 1.25.0
 
 require (
+	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20260404020628-f149714c1d54
 	github.com/go-kratos/kratos/contrib/registry/etcd/v2 v2.0.0-20260404020628-f149714c1d54
 	github.com/go-kratos/kratos/v2 v2.9.2
 	github.com/go-redis/redis/v8 v8.11.5
@@ -11,10 +12,12 @@ require (
 	github.com/jackc/pgx/v5 v5.9.2
 	go.etcd.io/etcd/client/v3 v3.6.10
 	go.uber.org/automaxprocs v1.6.0
+	go.uber.org/zap v1.27.0
 	golang.org/x/sync v0.20.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260120221211-b8f7ae30c516
 	google.golang.org/grpc v1.80.0
 	google.golang.org/protobuf v1.36.11
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
@@ -46,7 +49,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.39.0 // indirect
 	go.opentelemetry.io/otel/trace v1.39.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
