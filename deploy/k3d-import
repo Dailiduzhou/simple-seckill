@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") <image> [cluster]
+
+Import a Docker image into a k3d cluster.
+Works around k3d's multi-arch manifest list issue with docker save.
+
+Arguments:
+  image     Docker image to import (e.g. redis:7-alpine)
+  cluster   k3d cluster name (default: seckill)
+EOF
+    exit 1
+}
+
+[ $# -ge 1 ] || usage
+
+IMAGE="$1"
+CLUSTER="${2:-seckill}"
+TMPDIR="/tmp/k3d-import-$$"
+
+cleanup() { rm -rf "$TMPDIR"; }
+trap cleanup EXIT
+
+mkdir -p "$TMPDIR"
+
+echo "==> Saving $IMAGE from Docker..."
+docker save "$IMAGE" -o "$TMPDIR/orig.tar"
+
+echo "==> Stripping OCI manifest list..."
+tar -xf "$TMPDIR/orig.tar" -C "$TMPDIR"
+rm -f "$TMPDIR/index.json" "$TMPDIR/oci-layout"
+(cd "$TMPDIR" && tar -cf "$TMPDIR/single.tar" blobs manifest.json)
+
+echo "==> Importing into k3d-$CLUSTER..."
+NODE="k3d-${CLUSTER}-server-0"
+docker cp "$TMPDIR/single.tar" "$NODE:/tmp/k3d-import-$$.tar"
+docker exec "$NODE" ctr images import "/tmp/k3d-import-$$.tar"
+docker exec "$NODE" rm -f "/tmp/k3d-import-$$.tar"
+
+echo "==> Done."

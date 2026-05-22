@@ -12,6 +12,7 @@ RUN go mod download
 
 COPY api/ ./api/
 COPY app/user/ ./app/user/
+COPY pkg/ ./pkg/
 
 # 编译二进制文件
 RUN cd app/user/cmd/user && \
