@@ -1,0 +1,96 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /api/register:
+        post:
+            tags:
+                - User
+            operationId: User_Register
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.CreateUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.CreateUserReply'
+    /api/seckill:
+        post:
+            tags:
+                - Product
+            operationId: Product_Seckill
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.product.v1.SeckillReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.product.v1.SeckillResp'
+    /api/user:
+        post:
+            tags:
+                - User
+            operationId: User_GetUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.user.v1.GetUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.user.v1.GetUserReply'
+components:
+    schemas:
+        api.product.v1.SeckillReq:
+            type: object
+            properties:
+                userID:
+                    type: string
+        api.product.v1.SeckillResp:
+            type: object
+            properties:
+                res:
+                    type: integer
+                    format: enum
+        api.user.v1.CreateUserReply:
+            type: object
+            properties:
+                id:
+                    type: string
+        api.user.v1.CreateUserRequest:
+            type: object
+            properties: {}
+        api.user.v1.GetUserReply:
+            type: object
+            properties:
+                id:
+                    type: string
+        api.user.v1.GetUserRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+tags:
+    - name: Product
+    - name: User
