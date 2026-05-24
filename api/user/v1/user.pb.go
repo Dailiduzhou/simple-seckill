@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: user/v1/user.proto
+// source: api/user/v1/user.proto
 
 package v1
 
@@ -30,7 +30,7 @@ type CreateUserRequest struct {
 
 func (x *CreateUserRequest) Reset() {
 	*x = CreateUserRequest{}
-	mi := &file_user_v1_user_proto_msgTypes[0]
+	mi := &file_api_user_v1_user_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +42,7 @@ func (x *CreateUserRequest) String() string {
 func (*CreateUserRequest) ProtoMessage() {}
 
 func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[0]
+	mi := &file_api_user_v1_user_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +55,7 @@ func (x *CreateUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUserRequest.ProtoReflect.Descriptor instead.
 func (*CreateUserRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{0}
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{0}
 }
 
 type CreateUserReply struct {
@@ -67,7 +67,7 @@ type CreateUserReply struct {
 
 func (x *CreateUserReply) Reset() {
 	*x = CreateUserReply{}
-	mi := &file_user_v1_user_proto_msgTypes[1]
+	mi := &file_api_user_v1_user_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -79,7 +79,7 @@ func (x *CreateUserReply) String() string {
 func (*CreateUserReply) ProtoMessage() {}
 
 func (x *CreateUserReply) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[1]
+	mi := &file_api_user_v1_user_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -92,7 +92,7 @@ func (x *CreateUserReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateUserReply.ProtoReflect.Descriptor instead.
 func (*CreateUserReply) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{1}
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *CreateUserReply) GetId() int64 {
@@ -111,7 +111,7 @@ type GetUserRequest struct {
 
 func (x *GetUserRequest) Reset() {
 	*x = GetUserRequest{}
-	mi := &file_user_v1_user_proto_msgTypes[2]
+	mi := &file_api_user_v1_user_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -123,7 +123,7 @@ func (x *GetUserRequest) String() string {
 func (*GetUserRequest) ProtoMessage() {}
 
 func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[2]
+	mi := &file_api_user_v1_user_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -136,7 +136,7 @@ func (x *GetUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserRequest.ProtoReflect.Descriptor instead.
 func (*GetUserRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{2}
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetUserRequest) GetId() int64 {
@@ -155,7 +155,7 @@ type GetUserReply struct {
 
 func (x *GetUserReply) Reset() {
 	*x = GetUserReply{}
-	mi := &file_user_v1_user_proto_msgTypes[3]
+	mi := &file_api_user_v1_user_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -167,7 +167,7 @@ func (x *GetUserReply) String() string {
 func (*GetUserReply) ProtoMessage() {}
 
 func (x *GetUserReply) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[3]
+	mi := &file_api_user_v1_user_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -180,7 +180,7 @@ func (x *GetUserReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserReply.ProtoReflect.Descriptor instead.
 func (*GetUserReply) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{3}
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetUserReply) GetId() int64 {
@@ -200,7 +200,7 @@ type DeductBalanceRequest struct {
 
 func (x *DeductBalanceRequest) Reset() {
 	*x = DeductBalanceRequest{}
-	mi := &file_user_v1_user_proto_msgTypes[4]
+	mi := &file_api_user_v1_user_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -212,7 +212,7 @@ func (x *DeductBalanceRequest) String() string {
 func (*DeductBalanceRequest) ProtoMessage() {}
 
 func (x *DeductBalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[4]
+	mi := &file_api_user_v1_user_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -225,7 +225,7 @@ func (x *DeductBalanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeductBalanceRequest.ProtoReflect.Descriptor instead.
 func (*DeductBalanceRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{4}
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *DeductBalanceRequest) GetId() int64 {
@@ -251,7 +251,7 @@ type DeductBalanceReply struct {
 
 func (x *DeductBalanceReply) Reset() {
 	*x = DeductBalanceReply{}
-	mi := &file_user_v1_user_proto_msgTypes[5]
+	mi := &file_api_user_v1_user_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -263,7 +263,7 @@ func (x *DeductBalanceReply) String() string {
 func (*DeductBalanceReply) ProtoMessage() {}
 
 func (x *DeductBalanceReply) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_user_proto_msgTypes[5]
+	mi := &file_api_user_v1_user_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -276,7 +276,7 @@ func (x *DeductBalanceReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeductBalanceReply.ProtoReflect.Descriptor instead.
 func (*DeductBalanceReply) Descriptor() ([]byte, []int) {
-	return file_user_v1_user_proto_rawDescGZIP(), []int{5}
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeductBalanceReply) GetSuccess() bool {
@@ -286,11 +286,107 @@ func (x *DeductBalanceReply) GetSuccess() bool {
 	return false
 }
 
-var File_user_v1_user_proto protoreflect.FileDescriptor
+type RestoreBalanceReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Amount        int64                  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
 
-const file_user_v1_user_proto_rawDesc = "" +
+func (x *RestoreBalanceReq) Reset() {
+	*x = RestoreBalanceReq{}
+	mi := &file_api_user_v1_user_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreBalanceReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreBalanceReq) ProtoMessage() {}
+
+func (x *RestoreBalanceReq) ProtoReflect() protoreflect.Message {
+	mi := &file_api_user_v1_user_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RestoreBalanceReq.ProtoReflect.Descriptor instead.
+func (*RestoreBalanceReq) Descriptor() ([]byte, []int) {
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RestoreBalanceReq) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *RestoreBalanceReq) GetAmount() int64 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+type RestoreBalanceReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RestoreBalanceReply) Reset() {
+	*x = RestoreBalanceReply{}
+	mi := &file_api_user_v1_user_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreBalanceReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreBalanceReply) ProtoMessage() {}
+
+func (x *RestoreBalanceReply) ProtoReflect() protoreflect.Message {
+	mi := &file_api_user_v1_user_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RestoreBalanceReply.ProtoReflect.Descriptor instead.
+func (*RestoreBalanceReply) Descriptor() ([]byte, []int) {
+	return file_api_user_v1_user_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *RestoreBalanceReply) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+var File_api_user_v1_user_proto protoreflect.FileDescriptor
+
+const file_api_user_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x12user/v1/user.proto\x12\vapi.user.v1\x1a\x1cgoogle/api/annotations.proto\"\x13\n" +
+	"\x16api/user/v1/user.proto\x12\vapi.user.v1\x1a\x1cgoogle/api/annotations.proto\"\x13\n" +
 	"\x11CreateUserRequest\"!\n" +
 	"\x0fCreateUserReply\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\" \n" +
@@ -302,68 +398,78 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\x03R\x06amount\".\n" +
 	"\x12DeductBalanceReply\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\x9a\x02\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\";\n" +
+	"\x11RestoreBalanceReq\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x16\n" +
+	"\x06amount\x18\x02 \x01(\x03R\x06amount\"/\n" +
+	"\x13RestoreBalanceReply\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess2\xf0\x02\n" +
 	"\x04User\x12b\n" +
 	"\bRegister\x12\x1e.api.user.v1.CreateUserRequest\x1a\x1c.api.user.v1.CreateUserReply\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/api/register\x12W\n" +
 	"\aGetUser\x12\x1b.api.user.v1.GetUserRequest\x1a\x19.api.user.v1.GetUserReply\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/api/user\x12U\n" +
-	"\rDeductBalance\x12!.api.user.v1.DeductBalanceRequest\x1a\x1f.api.user.v1.DeductBalanceReply\"\x00B'\n" +
+	"\rDeductBalance\x12!.api.user.v1.DeductBalanceRequest\x1a\x1f.api.user.v1.DeductBalanceReply\"\x00\x12T\n" +
+	"\x0eRestoreBalance\x12\x1e.api.user.v1.RestoreBalanceReq\x1a .api.user.v1.RestoreBalanceReply\"\x00B'\n" +
 	"\vapi.user.v1P\x01Z\x16seckill/api/user/v1;v1b\x06proto3"
 
 var (
-	file_user_v1_user_proto_rawDescOnce sync.Once
-	file_user_v1_user_proto_rawDescData []byte
+	file_api_user_v1_user_proto_rawDescOnce sync.Once
+	file_api_user_v1_user_proto_rawDescData []byte
 )
 
-func file_user_v1_user_proto_rawDescGZIP() []byte {
-	file_user_v1_user_proto_rawDescOnce.Do(func() {
-		file_user_v1_user_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_user_v1_user_proto_rawDesc), len(file_user_v1_user_proto_rawDesc)))
+func file_api_user_v1_user_proto_rawDescGZIP() []byte {
+	file_api_user_v1_user_proto_rawDescOnce.Do(func() {
+		file_api_user_v1_user_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_user_v1_user_proto_rawDesc), len(file_api_user_v1_user_proto_rawDesc)))
 	})
-	return file_user_v1_user_proto_rawDescData
+	return file_api_user_v1_user_proto_rawDescData
 }
 
-var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_user_v1_user_proto_goTypes = []any{
+var file_api_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_api_user_v1_user_proto_goTypes = []any{
 	(*CreateUserRequest)(nil),    // 0: api.user.v1.CreateUserRequest
 	(*CreateUserReply)(nil),      // 1: api.user.v1.CreateUserReply
 	(*GetUserRequest)(nil),       // 2: api.user.v1.GetUserRequest
 	(*GetUserReply)(nil),         // 3: api.user.v1.GetUserReply
 	(*DeductBalanceRequest)(nil), // 4: api.user.v1.DeductBalanceRequest
 	(*DeductBalanceReply)(nil),   // 5: api.user.v1.DeductBalanceReply
+	(*RestoreBalanceReq)(nil),    // 6: api.user.v1.RestoreBalanceReq
+	(*RestoreBalanceReply)(nil),  // 7: api.user.v1.RestoreBalanceReply
 }
-var file_user_v1_user_proto_depIdxs = []int32{
+var file_api_user_v1_user_proto_depIdxs = []int32{
 	0, // 0: api.user.v1.User.Register:input_type -> api.user.v1.CreateUserRequest
 	2, // 1: api.user.v1.User.GetUser:input_type -> api.user.v1.GetUserRequest
 	4, // 2: api.user.v1.User.DeductBalance:input_type -> api.user.v1.DeductBalanceRequest
-	1, // 3: api.user.v1.User.Register:output_type -> api.user.v1.CreateUserReply
-	3, // 4: api.user.v1.User.GetUser:output_type -> api.user.v1.GetUserReply
-	5, // 5: api.user.v1.User.DeductBalance:output_type -> api.user.v1.DeductBalanceReply
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	6, // 3: api.user.v1.User.RestoreBalance:input_type -> api.user.v1.RestoreBalanceReq
+	1, // 4: api.user.v1.User.Register:output_type -> api.user.v1.CreateUserReply
+	3, // 5: api.user.v1.User.GetUser:output_type -> api.user.v1.GetUserReply
+	5, // 6: api.user.v1.User.DeductBalance:output_type -> api.user.v1.DeductBalanceReply
+	7, // 7: api.user.v1.User.RestoreBalance:output_type -> api.user.v1.RestoreBalanceReply
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_user_v1_user_proto_init() }
-func file_user_v1_user_proto_init() {
-	if File_user_v1_user_proto != nil {
+func init() { file_api_user_v1_user_proto_init() }
+func file_api_user_v1_user_proto_init() {
+	if File_api_user_v1_user_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_v1_user_proto_rawDesc), len(file_user_v1_user_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_user_v1_user_proto_rawDesc), len(file_api_user_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_user_v1_user_proto_goTypes,
-		DependencyIndexes: file_user_v1_user_proto_depIdxs,
-		MessageInfos:      file_user_v1_user_proto_msgTypes,
+		GoTypes:           file_api_user_v1_user_proto_goTypes,
+		DependencyIndexes: file_api_user_v1_user_proto_depIdxs,
+		MessageInfos:      file_api_user_v1_user_proto_msgTypes,
 	}.Build()
-	File_user_v1_user_proto = out.File
-	file_user_v1_user_proto_goTypes = nil
-	file_user_v1_user_proto_depIdxs = nil
+	File_api_user_v1_user_proto = out.File
+	file_api_user_v1_user_proto_goTypes = nil
+	file_api_user_v1_user_proto_depIdxs = nil
 }

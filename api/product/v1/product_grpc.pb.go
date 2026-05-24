@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.1
-// source: product/v1/product.proto
+// source: api/product/v1/product.proto
 
 package v1
 
@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Product_Seckill_FullMethodName = "/api.product.v1.Product/Seckill"
+	Product_Seckill_FullMethodName         = "/api.product.v1.Product/Seckill"
+	Product_DeductStockSaga_FullMethodName = "/api.product.v1.Product/DeductStockSaga"
+	Product_RestoreStock_FullMethodName    = "/api.product.v1.Product/RestoreStock"
 )
 
 // ProductClient is the client API for Product service.
@@ -27,6 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductClient interface {
 	Seckill(ctx context.Context, in *SeckillReq, opts ...grpc.CallOption) (*SeckillResp, error)
+	DeductStockSaga(ctx context.Context, in *DeductStockSagaReq, opts ...grpc.CallOption) (*DeductStockSagaResp, error)
+	RestoreStock(ctx context.Context, in *RestoreStockReq, opts ...grpc.CallOption) (*RestoreStockResp, error)
 }
 
 type productClient struct {
@@ -47,11 +51,33 @@ func (c *productClient) Seckill(ctx context.Context, in *SeckillReq, opts ...grp
 	return out, nil
 }
 
+func (c *productClient) DeductStockSaga(ctx context.Context, in *DeductStockSagaReq, opts ...grpc.CallOption) (*DeductStockSagaResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeductStockSagaResp)
+	err := c.cc.Invoke(ctx, Product_DeductStockSaga_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productClient) RestoreStock(ctx context.Context, in *RestoreStockReq, opts ...grpc.CallOption) (*RestoreStockResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RestoreStockResp)
+	err := c.cc.Invoke(ctx, Product_RestoreStock_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServer is the server API for Product service.
 // All implementations must embed UnimplementedProductServer
 // for forward compatibility.
 type ProductServer interface {
 	Seckill(context.Context, *SeckillReq) (*SeckillResp, error)
+	DeductStockSaga(context.Context, *DeductStockSagaReq) (*DeductStockSagaResp, error)
+	RestoreStock(context.Context, *RestoreStockReq) (*RestoreStockResp, error)
 	mustEmbedUnimplementedProductServer()
 }
 
@@ -64,6 +90,12 @@ type UnimplementedProductServer struct{}
 
 func (UnimplementedProductServer) Seckill(context.Context, *SeckillReq) (*SeckillResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method Seckill not implemented")
+}
+func (UnimplementedProductServer) DeductStockSaga(context.Context, *DeductStockSagaReq) (*DeductStockSagaResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeductStockSaga not implemented")
+}
+func (UnimplementedProductServer) RestoreStock(context.Context, *RestoreStockReq) (*RestoreStockResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method RestoreStock not implemented")
 }
 func (UnimplementedProductServer) mustEmbedUnimplementedProductServer() {}
 func (UnimplementedProductServer) testEmbeddedByValue()                 {}
@@ -104,6 +136,42 @@ func _Product_Seckill_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Product_DeductStockSaga_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeductStockSagaReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServer).DeductStockSaga(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Product_DeductStockSaga_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServer).DeductStockSaga(ctx, req.(*DeductStockSagaReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Product_RestoreStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreStockReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServer).RestoreStock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Product_RestoreStock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServer).RestoreStock(ctx, req.(*RestoreStockReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Product_ServiceDesc is the grpc.ServiceDesc for Product service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -115,7 +183,15 @@ var Product_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Seckill",
 			Handler:    _Product_Seckill_Handler,
 		},
+		{
+			MethodName: "DeductStockSaga",
+			Handler:    _Product_DeductStockSaga_Handler,
+		},
+		{
+			MethodName: "RestoreStock",
+			Handler:    _Product_RestoreStock_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "product/v1/product.proto",
+	Metadata: "api/product/v1/product.proto",
 }

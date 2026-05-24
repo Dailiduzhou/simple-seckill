@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.1
-// source: user/v1/user.proto
+// source: api/user/v1/user.proto
 
 package v1
 
@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_Register_FullMethodName      = "/api.user.v1.User/Register"
-	User_GetUser_FullMethodName       = "/api.user.v1.User/GetUser"
-	User_DeductBalance_FullMethodName = "/api.user.v1.User/DeductBalance"
+	User_Register_FullMethodName       = "/api.user.v1.User/Register"
+	User_GetUser_FullMethodName        = "/api.user.v1.User/GetUser"
+	User_DeductBalance_FullMethodName  = "/api.user.v1.User/DeductBalance"
+	User_RestoreBalance_FullMethodName = "/api.user.v1.User/RestoreBalance"
 )
 
 // UserClient is the client API for User service.
@@ -31,6 +32,7 @@ type UserClient interface {
 	Register(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserReply, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserReply, error)
 	DeductBalance(ctx context.Context, in *DeductBalanceRequest, opts ...grpc.CallOption) (*DeductBalanceReply, error)
+	RestoreBalance(ctx context.Context, in *RestoreBalanceReq, opts ...grpc.CallOption) (*RestoreBalanceReply, error)
 }
 
 type userClient struct {
@@ -71,6 +73,16 @@ func (c *userClient) DeductBalance(ctx context.Context, in *DeductBalanceRequest
 	return out, nil
 }
 
+func (c *userClient) RestoreBalance(ctx context.Context, in *RestoreBalanceReq, opts ...grpc.CallOption) (*RestoreBalanceReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RestoreBalanceReply)
+	err := c.cc.Invoke(ctx, User_RestoreBalance_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
@@ -78,6 +90,7 @@ type UserServer interface {
 	Register(context.Context, *CreateUserRequest) (*CreateUserReply, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserReply, error)
 	DeductBalance(context.Context, *DeductBalanceRequest) (*DeductBalanceReply, error)
+	RestoreBalance(context.Context, *RestoreBalanceReq) (*RestoreBalanceReply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -96,6 +109,9 @@ func (UnimplementedUserServer) GetUser(context.Context, *GetUserRequest) (*GetUs
 }
 func (UnimplementedUserServer) DeductBalance(context.Context, *DeductBalanceRequest) (*DeductBalanceReply, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeductBalance not implemented")
+}
+func (UnimplementedUserServer) RestoreBalance(context.Context, *RestoreBalanceReq) (*RestoreBalanceReply, error) {
+	return nil, status.Error(codes.Unimplemented, "method RestoreBalance not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -172,6 +188,24 @@ func _User_DeductBalance_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_RestoreBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreBalanceReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).RestoreBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_RestoreBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).RestoreBalance(ctx, req.(*RestoreBalanceReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -191,7 +225,11 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "DeductBalance",
 			Handler:    _User_DeductBalance_Handler,
 		},
+		{
+			MethodName: "RestoreBalance",
+			Handler:    _User_RestoreBalance_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "user/v1/user.proto",
+	Metadata: "api/user/v1/user.proto",
 }

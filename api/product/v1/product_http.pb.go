@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.9.2
 // - protoc             v7.34.1
-// source: product/v1/product.proto
+// source: api/product/v1/product.proto
 
 package v1
 
@@ -19,15 +19,18 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationProductDeductStockSaga = "/api.product.v1.Product/DeductStockSaga"
 const OperationProductSeckill = "/api.product.v1.Product/Seckill"
 
 type ProductHTTPServer interface {
+	DeductStockSaga(context.Context, *DeductStockSagaReq) (*DeductStockSagaResp, error)
 	Seckill(context.Context, *SeckillReq) (*SeckillResp, error)
 }
 
 func RegisterProductHTTPServer(s *http.Server, srv ProductHTTPServer) {
 	r := s.Route("/")
 	r.POST("/api/seckill", _Product_Seckill0_HTTP_Handler(srv))
+	r.POST("/api/seckill/saga/deductStock", _Product_DeductStockSaga0_HTTP_Handler(srv))
 }
 
 func _Product_Seckill0_HTTP_Handler(srv ProductHTTPServer) func(ctx http.Context) error {
@@ -52,7 +55,30 @@ func _Product_Seckill0_HTTP_Handler(srv ProductHTTPServer) func(ctx http.Context
 	}
 }
 
+func _Product_DeductStockSaga0_HTTP_Handler(srv ProductHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeductStockSagaReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProductDeductStockSaga)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeductStockSaga(ctx, req.(*DeductStockSagaReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*DeductStockSagaResp)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ProductHTTPClient interface {
+	DeductStockSaga(ctx context.Context, req *DeductStockSagaReq, opts ...http.CallOption) (rsp *DeductStockSagaResp, err error)
 	Seckill(ctx context.Context, req *SeckillReq, opts ...http.CallOption) (rsp *SeckillResp, err error)
 }
 
@@ -62,6 +88,19 @@ type ProductHTTPClientImpl struct {
 
 func NewProductHTTPClient(client *http.Client) ProductHTTPClient {
 	return &ProductHTTPClientImpl{client}
+}
+
+func (c *ProductHTTPClientImpl) DeductStockSaga(ctx context.Context, in *DeductStockSagaReq, opts ...http.CallOption) (*DeductStockSagaResp, error) {
+	var out DeductStockSagaResp
+	pattern := "/api/seckill/saga/deductStock"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProductDeductStockSaga))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (c *ProductHTTPClientImpl) Seckill(ctx context.Context, in *SeckillReq, opts ...http.CallOption) (*SeckillResp, error) {

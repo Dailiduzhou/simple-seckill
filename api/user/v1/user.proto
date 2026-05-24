@@ -23,6 +23,7 @@ service User {
   }
 
   rpc DeductBalance (DeductBalanceRequest) returns (DeductBalanceReply) {}
+  rpc RestoreBalance(RestoreBalanceReq) returns (RestoreBalanceReply) {}
 }
 
 message CreateUserRequest {}
@@ -46,3 +47,11 @@ message DeductBalanceReply {
   bool success = 1;
 }
 
+
+message RestoreBalanceReq {
+   int64 id = 1;
+   int64 amount = 2;
+}
+message RestoreBalanceReply {
+   bool success = 1;
+}

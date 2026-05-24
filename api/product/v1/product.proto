@@ -14,6 +14,13 @@ service Product {
         body: "*"
     };
   }
+  rpc DeductStockSaga(DeductStockSagaReq) returns (DeductStockSagaResp) {
+   option (google.api.http) = {
+     post: "/api/seckill/saga/deductStock"
+     body: "*"
+    };
+  }
+  rpc RestoreStock(RestoreStockReq) returns (RestoreStockResp) {}
 }
 
 enum Result {
@@ -27,3 +34,17 @@ message SeckillReq {
 message SeckillResp {
   Result res = 1;
 }
+message DeductStockSagaReq {
+   int64 productID = 1;
+   int32 amount = 2;
+ }
+ message DeductStockSagaResp {
+   bool success = 1;
+ }
+ message RestoreStockReq {
+   int64 productID = 1;
+   int32 amount = 2;
+ }
+ message RestoreStockResp {
+   bool success = 1;
+ }
