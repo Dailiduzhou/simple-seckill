@@ -36,3 +36,20 @@ func (q *Queries) GetProduct(ctx context.Context, id int64) (Product, error) {
 	err := row.Scan(&i.ID, &i.Price, &i.Stock)
 	return i, err
 }
+
+const restoreStock = `-- name: RestoreStock :execrows
+UPDATE products SET stock = stock + $2 WHERE id = $1
+`
+
+type RestoreStockParams struct {
+	ID    int64
+	Stock int32
+}
+
+func (q *Queries) RestoreStock(ctx context.Context, arg RestoreStockParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, restoreStock, arg.ID, arg.Stock)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}

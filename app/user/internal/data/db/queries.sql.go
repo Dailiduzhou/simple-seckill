@@ -47,3 +47,20 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	err := row.Scan(&i.ID, &i.Balance)
 	return i, err
 }
+
+const restoreBalance = `-- name: RestoreBalance :execrows
+UPDATE users SET balance = balance - $2 WHERE id = $1
+`
+
+type RestoreBalanceParams struct {
+	ID      int64
+	Balance int32
+}
+
+func (q *Queries) RestoreBalance(ctx context.Context, arg RestoreBalanceParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, restoreBalance, arg.ID, arg.Balance)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
