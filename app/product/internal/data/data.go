@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	uv1 "seckill/api/user/v1"
 	"seckill/app/product/internal/biz"
 	"seckill/app/product/internal/conf"
 	"seckill/app/product/internal/data/db"
@@ -20,21 +19,17 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
-// ProviderSet is data providers.
 var ProviderSet = wire.NewSet(NewData, NewProductRepo, wire.Bind(new(biz.ProductRepo), new(*ProductRepo)))
 
-// Data .
 type Data struct {
-	db         *sql.DB
-	rdb        *redis.Client
-	rs         *redsync.Redsync
-	q          *db.Queries
-	sg         *singleflight.Group
-	userclient uv1.UserClient
+	db  *sql.DB
+	rdb *redis.Client
+	rs  *redsync.Redsync
+	q   *db.Queries
+	sg  *singleflight.Group
 }
 
-// NewData .
-func NewData(c *conf.Data, userclient uv1.UserClient) (*Data, func(), error) {
+func NewData(c *conf.Data) (*Data, func(), error) {
 	sqldb, err := sql.Open("pgx", c.Database.Source)
 	if err != nil {
 		return nil, nil, fmt.Errorf("open postgres: %w", err)
@@ -69,11 +64,10 @@ func NewData(c *conf.Data, userclient uv1.UserClient) (*Data, func(), error) {
 		log.Info("closing the data resources")
 	}
 	return &Data{
-		db:         sqldb,
-		rdb:        rdb,
-		rs:         rs,
-		q:          db.New(sqldb),
-		sg:         &singleflight.Group{},
-		userclient: userclient,
+		db:  sqldb,
+		rdb: rdb,
+		rs:  rs,
+		q:   db.New(sqldb),
+		sg:  &singleflight.Group{},
 	}, cleanup, nil
 }

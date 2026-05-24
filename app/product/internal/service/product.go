@@ -27,3 +27,21 @@ func (s *ProductService) Seckill(ctx context.Context, req *pb.SeckillReq) (*pb.S
 	}
 	return &pb.SeckillResp{Res: pb.Result_SUCCESS}, nil
 }
+
+func (s *ProductService) DeductStockSaga(ctx context.Context, req *pb.DeductStockSagaReq) (*pb.DeductStockSagaResp, error) {
+	err := s.uc.DeductStockSaga(ctx, req.ProductID, req.Amount)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("DeductStockSaga: product_id=%d amount=%d %v", req.ProductID, req.Amount, err)
+		return &pb.DeductStockSagaResp{Success: false}, err
+	}
+	return &pb.DeductStockSagaResp{Success: true}, nil
+}
+
+func (s *ProductService) RestoreStock(ctx context.Context, req *pb.RestoreStockReq) (*pb.RestoreStockResp, error) {
+	err := s.uc.RestoreStock(ctx, req.ProductID, req.Amount)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("RestoreStock: product_id=%d amount=%d %v", req.ProductID, req.Amount, err)
+		return &pb.RestoreStockResp{Success: false}, err
+	}
+	return &pb.RestoreStockResp{Success: true}, nil
+}

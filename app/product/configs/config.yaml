@@ -17,5 +17,9 @@ registry:
   etcd:
     endpoints:
       - "etcd:2379"
+dtm:
+  addr: dtm:36790
+  prod_grpc_addr: product:9001
+  user_grpc_addr: user:9000
 trace:
   endpoint: jaeger:4317

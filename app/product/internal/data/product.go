@@ -10,7 +10,6 @@ import (
 	"time"
 
 	productv1 "seckill/api/product/v1"
-	uv1 "seckill/api/user/v1"
 	"seckill/app/product/internal/biz"
 	"seckill/app/product/internal/data/db"
 
@@ -80,44 +79,41 @@ func (r *ProductRepo) FindByID(ctx context.Context, ID int64) (*biz.Product, err
 	return val.(*biz.Product), nil
 }
 
-func (r *ProductRepo) DeductStock(ctx context.Context, userID int64, ID int64, amount int32) error {
-	product, err := r.FindByID(ctx, ID)
-	if err != nil {
-		r.log.WithContext(ctx).Errorf("DeductStock: find product %d: %v", ID, err)
-		return err
-	}
-
-	if product.Stock == 0 {
-		r.log.WithContext(ctx).Infof("DeductStock: product %d sold out", product.ID)
-		return productv1.ErrorSoldOut("Product %d sold out", product.ID)
-	}
-
-	_, err = r.data.userclient.DeductBalance(ctx, &uv1.DeductBalanceRequest{Id: userID, Amount: int64(product.Price)})
-	if err != nil {
-		if uv1.IsUserNotFound(err) {
-			r.log.WithContext(ctx).Errorf("DeductStock: user %d not found", userID)
-			return productv1.ErrorServiceBusy("User %d not found", userID)
-		}
-		if uv1.IsLowBalance(err) {
-			r.log.WithContext(ctx).Errorf("DeductStock: user %d insufficient balance", userID)
-		}
-		return err
-	}
-
+func (r *ProductRepo) DeductStockSaga(ctx context.Context, productID int64, amount int32) error {
 	rows, err := r.data.q.DeductStock(ctx, db.DeductStockParams{
-		ID:    ID,
+		ID:    productID,
 		Stock: amount,
 	})
 	if err != nil {
 		return errors.InternalServer("DB_ERROR", "failed to deduct stock")
 	}
 	if rows == 0 {
-		return productv1.ErrorSoldOut("product %d sold out or not found", ID)
+		return productv1.ErrorSoldOut("product %d sold out or not found", productID)
 	}
 
-	cacheKey := fmt.Sprintf("product:%d", ID)
+	cacheKey := fmt.Sprintf("product:%d", productID)
 	if err := r.data.rdb.Del(ctx, cacheKey).Err(); err != nil {
 		r.log.WithContext(ctx).Errorf("delete product cache after deduct: %v", err)
+	}
+
+	return nil
+}
+
+func (r *ProductRepo) RestoreStock(ctx context.Context, productID int64, amount int32) error {
+	rows, err := r.data.q.RestoreStock(ctx, db.RestoreStockParams{
+		ID:    productID,
+		Stock: amount,
+	})
+	if err != nil {
+		return errors.InternalServer("DB_ERROR", "failed to restore stock")
+	}
+	if rows == 0 {
+		r.log.WithContext(ctx).Warnf("RestoreStock: 0 rows affected for product %d", productID)
+	}
+
+	cacheKey := fmt.Sprintf("product:%d", productID)
+	if err := r.data.rdb.Del(ctx, cacheKey).Err(); err != nil {
+		r.log.WithContext(ctx).Errorf("delete product cache after restore: %v", err)
 	}
 
 	return nil

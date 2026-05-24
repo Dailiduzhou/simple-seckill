@@ -9,6 +9,13 @@ message Bootstrap {
   Server server = 1;
   Data data = 2;
   Registry registry = 3;
+  Dtm dtm = 4;
+}
+
+message Dtm {
+  string addr = 1;
+  string prod_grpc_addr = 2;
+  string user_grpc_addr = 3;
 }
 
 message Registry {
