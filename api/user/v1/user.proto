@@ -9,21 +9,20 @@ option java_multiple_files = true;
 option java_package = "api.user.v1";
 
 service User {
-	rpc Register (CreateUserRequest) returns (CreateUserReply) {
+  rpc Register (CreateUserRequest) returns (CreateUserReply) {
     option (google.api.http) = {
         post: "/api/register"
         body: "*"
     };
   }
-	rpc GetUser (GetUserRequest) returns (GetUserReply) {
+  rpc GetUser (GetUserRequest) returns (GetUserReply) {
     option (google.api.http) = {
         post: "/api/user"
         body: "*"
-  };
+    };
   }
-
   rpc DeductBalance (DeductBalanceRequest) returns (DeductBalanceReply) {}
-  rpc RestoreBalance(RestoreBalanceReq) returns (RestoreBalanceReply) {}
+  rpc RestoreBalance (RestoreBalanceReq) returns (RestoreBalanceReply) {}
 }
 
 message CreateUserRequest {}
@@ -42,16 +41,14 @@ message DeductBalanceRequest {
   int64 id = 1;
   int64 amount = 2;
 }
-
 message DeductBalanceReply {
   bool success = 1;
 }
 
-
 message RestoreBalanceReq {
-   int64 id = 1;
-   int64 amount = 2;
+  int64 id = 1;
+  int64 amount = 2;
 }
 message RestoreBalanceReply {
-   bool success = 1;
+  bool success = 1;
 }

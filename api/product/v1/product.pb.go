@@ -370,11 +370,11 @@ const file_api_product_v1_product_proto_rawDesc = "" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess*\"\n" +
 	"\x06Result\x12\v\n" +
 	"\aSUCCESS\x10\x00\x12\v\n" +
-	"\aFAILURE\x10\x012\xc2\x02\n" +
+	"\aFAILURE\x10\x012\xc0\x02\n" +
 	"\aProduct\x12[\n" +
 	"\aSeckill\x12\x1a.api.product.v1.SeckillReq\x1a\x1b.api.product.v1.SeckillResp\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/api/seckill\x12\x84\x01\n" +
-	"\x0fDeductStockSaga\x12\".api.product.v1.DeductStockSagaReq\x1a#.api.product.v1.DeductStockSagaResp\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/api/seckill/saga/deductStock\x12S\n" +
-	"\fRestoreStock\x12\x1f.api.product.v1.RestoreStockReq\x1a .api.product.v1.RestoreStockResp\"\x00B-\n" +
+	"\x0fDeductStockSaga\x12\".api.product.v1.DeductStockSagaReq\x1a#.api.product.v1.DeductStockSagaResp\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/api/seckill/saga/deductStock\x12Q\n" +
+	"\fRestoreStock\x12\x1f.api.product.v1.RestoreStockReq\x1a .api.product.v1.RestoreStockRespB-\n" +
 	"\x0eapi.product.v1P\x01Z\x19seckill/api/product/v1;v1b\x06proto3"
 
 var (
