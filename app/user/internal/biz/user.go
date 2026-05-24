@@ -47,9 +47,9 @@ func (uc *UserUsecase) GetUser(ctx context.Context, ID int64) (*User, error) {
 	return user, nil
 }
 
-func (uc *UserUsecase) DeducBalance(ctx context.Context, ID int64, amount int32) error {
+func (uc *UserUsecase) DeductBalance(ctx context.Context, ID int64, amount int32) error {
 	uc.log.WithContext(ctx).Infof("DeducBalance: user_id=%d amount=%d", ID, amount)
-	if err := uc.repo.DeducBalance(ctx, ID, amount); err != nil {
+	if err := uc.repo.DeductBalance(ctx, ID, amount); err != nil {
 		uc.log.WithContext(ctx).Errorf("DeducBalance: user_id=%d amount=%d %v", ID, amount, err)
 		return err
 	}
