@@ -126,7 +126,7 @@ func (r *UserRepo) setCache(ctx context.Context, key string, user *biz.User) {
 	r.data.rdb.Set(ctx, key, data, exp)
 }
 
-func (r *UserRepo) DeducBalance(ctx context.Context, ID int64, amount int32) error {
+func (r *UserRepo) DeductBalance(ctx context.Context, ID int64, amount int32) error {
 	n, err := r.data.q.DeductBalance(ctx, db.DeductBalanceParams{
 		ID:      ID,
 		Balance: amount,

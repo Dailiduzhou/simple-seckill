@@ -14,7 +14,7 @@ type User struct {
 type UserRepo interface {
 	Create(ctx context.Context) (*User, error)
 	FindByID(ctx context.Context, ID int64) (*User, error)
-	DeducBalance(ctx context.Context, ID int64, amount int32) error
+	DeductBalance(ctx context.Context, ID int64, amount int32) error
 	RestoreBalance(ctx context.Context, ID int64, amount int32) error
 }
 
