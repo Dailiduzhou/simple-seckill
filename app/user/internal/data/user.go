@@ -83,6 +83,26 @@ func (r *UserRepo) FindByID(ctx context.Context, ID int64) (*biz.User, error) {
 	return val.(*biz.User), nil
 }
 
+func (r *UserRepo) RestoreBalance(ctx context.Context, ID int64, amount int32) error {
+	rows, err := r.data.q.RestoreBalance(ctx, db.RestoreBalanceParams{
+		ID:      ID,
+		Balance: amount,
+	})
+	if err != nil {
+		return errors.InternalServer("DB_ERROR", "failed to restore balance")
+	}
+	if rows == 0 {
+		r.log.WithContext(ctx).Warnf("RestoreBalance: 0 rows affected for user %d", ID)
+	}
+
+	cacheKey := fmt.Sprintf("user:%d", ID)
+	if err := r.data.rdb.Del(ctx, cacheKey).Err(); err != nil {
+		r.log.WithContext(ctx).Errorf("delete user cache after restore: %v", err)
+	}
+
+	return nil
+}
+
 func (r *UserRepo) getCache(ctx context.Context, key string) (*biz.User, error) {
 	val, err := r.data.rdb.Get(ctx, key).Bytes()
 	if err != nil {

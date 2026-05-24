@@ -45,3 +45,12 @@ func (s *UserService) DeductBalance(ctx context.Context, req *pb.DeductBalanceRe
 	}
 	return &pb.DeductBalanceReply{Success: true}, nil
 }
+
+func (s *UserService) RestoreBalance(ctx context.Context, req *pb.RestoreBalanceReq) (*pb.RestoreBalanceReply, error) {
+	err := s.uc.RestoreBalance(ctx, req.Id, int32(req.Amount))
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("RestoreBalance: id=%d amount=%d %v", req.Id, req.Amount, err)
+		return &pb.RestoreBalanceReply{Success: false}, err
+	}
+	return &pb.RestoreBalanceReply{Success: true}, nil
+}

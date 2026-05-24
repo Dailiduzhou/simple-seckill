@@ -49,7 +49,7 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 }
 
 const restoreBalance = `-- name: RestoreBalance :execrows
-UPDATE users SET balance = balance - $2 WHERE id = $1
+UPDATE users SET balance = balance + $2 WHERE id = $1
 `
 
 type RestoreBalanceParams struct {

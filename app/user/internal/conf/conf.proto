@@ -9,6 +9,11 @@ message Bootstrap {
   Server server = 1;
   Data data = 2;
   Registry registry = 3;
+  Dtm dtm = 4;
+}
+
+message Dtm {
+  string addr = 1;
 }
 
 message Server {

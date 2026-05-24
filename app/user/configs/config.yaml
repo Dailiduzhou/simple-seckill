@@ -17,5 +17,7 @@ registry:
   etcd:
     endpoints:
       - "etcd:2379"
+dtm:
+  addr: dtm:36790
 trace:
   endpoint: jaeger:4317
