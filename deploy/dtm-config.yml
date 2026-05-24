@@ -1,0 +1,9 @@
+Store:
+  Driver: postgres
+  Host: postgres
+  Port: 5432
+  User: postgres
+  Password: postgres
+  Db: dtm
+HTTPPort: 36789
+GrpcPort: 36790

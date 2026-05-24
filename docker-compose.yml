@@ -85,17 +85,15 @@ services:
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
 
-  dtm:                                                                                                                                                  
-    image: yedf/dtm:latest                                                                                                                              
-    ports:                                                                                                                                              
-      - "36789:36789"                                                                                                                                   
-      - "36790:36790"                                                                                                                                   
-    command: sh -c "/usr/local/bin/dtm"                                                                                                                 
-    environment:                                                                                                                                        
-      STORE_DRIVER: postgres                                                                                                                            
-      STORE_DATASOURCE: postgres://postgres:postgres@postgres:5432/seckill?sslmode=disable                                                              
-    depends_on:                                                                                                                                         
-      - postgres  
+  dtm:
+    image: yedf/dtm:latest
+    ports:
+      - "36789:36789"
+      - "36790:36790"
+    volumes:
+      - ./deploy/dtm-config.yml:/app/dtm/configs/config.yml
+    depends_on:
+      - postgres
 
 volumes:
   pgdata:

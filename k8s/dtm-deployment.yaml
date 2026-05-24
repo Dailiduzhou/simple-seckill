@@ -31,22 +31,16 @@ spec:
                 echo "waiting for postgres..."; sleep 2;
               done
       containers:
-        - args:
-            - sh
-            - -c
-            - /usr/local/bin/dtm
-          env:
-            - name: STORE_DATASOURCE
-              value: postgres://postgres:postgres@postgres:5432/seckill?sslmode=disable
-            - name: STORE_DRIVER
-              value: postgres
-          image: yedf/dtm:latest
+        - image: yedf/dtm:latest
           name: dtm
           ports:
             - containerPort: 36789
               protocol: TCP
             - containerPort: 36790
               protocol: TCP
+          volumeMounts:
+            - mountPath: /app/dtm/configs
+              name: dtm-cm0
           readinessProbe:
             tcpSocket:
               port: 36789
@@ -58,3 +52,7 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
       restartPolicy: Always
+      volumes:
+        - configMap:
+            name: dtm-cm0
+          name: dtm-cm0
