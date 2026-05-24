@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: dtm
+  name: dtm
+spec:
+  ports:
+    - name: "36789"
+      port: 36789
+      targetPort: 36789
+    - name: "36790"
+      port: 36790
+      targetPort: 36790
+  selector:
+    io.kompose.service: dtm

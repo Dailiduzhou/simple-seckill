@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.38.0 (HEAD)
+  labels:
+    io.kompose.service: dtm
+  name: dtm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: dtm
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.38.0 (HEAD)
+      labels:
+        io.kompose.service: dtm
+    spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z postgres 5432; do
+                echo "waiting for postgres..."; sleep 2;
+              done
+      containers:
+        - args:
+            - sh
+            - -c
+            - /usr/local/bin/dtm
+          env:
+            - name: STORE_DATASOURCE
+              value: postgres://postgres:postgres@postgres:5432/seckill?sslmode=disable
+            - name: STORE_DRIVER
+              value: postgres
+          image: yedf/dtm:latest
+          name: dtm
+          ports:
+            - containerPort: 36789
+              protocol: TCP
+            - containerPort: 36790
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 36789
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 36789
+            initialDelaySeconds: 15
+            periodSeconds: 20
+      restartPolicy: Always
