@@ -35,7 +35,7 @@ type ProductUsecase struct {
 
 func NewProductUsecase(repo ProductRepo, dtmCfg *conf.Dtm, logger log.Logger) *ProductUsecase {
 	if dtmCfg == nil || dtmCfg.Addr == "" {
-		panic("dmt config is required")
+		panic("dtm config is required")
 	}
 	return &ProductUsecase{
 		repo:   repo,

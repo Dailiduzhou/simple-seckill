@@ -17,6 +17,7 @@ data:
           - targets: [localhost]
             labels:
               job: user
+              service: user
               __path__: /logs/user/*.log
 
       - job_name: product
@@ -24,6 +25,7 @@ data:
           - targets: [localhost]
             labels:
               job: product
+              service: product
               __path__: /logs/product/*.log
 kind: ConfigMap
 metadata:

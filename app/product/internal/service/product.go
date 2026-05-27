@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	pb "seckill/api/product/v1"
 	"seckill/app/product/internal/biz"
@@ -20,8 +21,25 @@ func NewProductService(uc *biz.ProductUsecase, logger log.Logger) *ProductServic
 }
 
 func (s *ProductService) Seckill(ctx context.Context, req *pb.SeckillReq) (*pb.SeckillResp, error) {
+	start := time.Now()
+	result := "success"
+	errMsg := ""
+	defer func() {
+		s.log.WithContext(ctx).Infow(
+			"event", "seckill_request",
+			"service", "product",
+			"method", "ProductService.Seckill",
+			"user_id", req.UserID,
+			"result", result,
+			"duration_ms", time.Since(start).Milliseconds(),
+			"error", errMsg,
+		)
+	}()
+
 	err := s.uc.Seckill(ctx, req.UserID)
 	if err != nil {
+		result = "error"
+		errMsg = err.Error()
 		s.log.WithContext(ctx).Errorf("Seckill: user_id=%d %v", req.UserID, err)
 		return &pb.SeckillResp{Res: pb.Result_FAILURE}, err
 	}

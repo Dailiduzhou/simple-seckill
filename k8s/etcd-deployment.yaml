@@ -28,9 +28,17 @@ spec:
               value: http://etcd:2379
             - name: ETCD_LISTEN_CLIENT_URLS
               value: http://0.0.0.0:2379
+            - name: ETCD_LISTEN_PEER_URLS
+              value: http://0.0.0.0:2380
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              value: http://etcd:2380
+            - name: ETCD_INITIAL_CLUSTER
+              value: default=http://etcd:2380
           image: bitnami/etcd:3.5
           name: etcd
           ports:
             - containerPort: 2379
+              protocol: TCP
+            - containerPort: 2380
               protocol: TCP
       restartPolicy: Always

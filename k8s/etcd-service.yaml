@@ -12,5 +12,8 @@ spec:
     - name: "2379"
       port: 2379
       targetPort: 2379
+    - name: "2380"
+      port: 2380
+      targetPort: 2380
   selector:
     io.kompose.service: etcd

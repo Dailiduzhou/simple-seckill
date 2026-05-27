@@ -31,4 +31,24 @@ spec:
           ports:
             - containerPort: 3000
               protocol: TCP
+          volumeMounts:
+            - mountPath: /etc/grafana/provisioning/datasources/datasources.yaml
+              name: grafana-datasources
+              subPath: datasources.yaml
+            - mountPath: /etc/grafana/provisioning/dashboards/dashboards.yaml
+              name: grafana-dashboard-provider
+              subPath: dashboards.yaml
+            - mountPath: /var/lib/grafana/dashboards/seckill/seckill-observability.json
+              name: grafana-dashboards
+              subPath: seckill-observability.json
       restartPolicy: Always
+      volumes:
+        - configMap:
+            name: grafana-datasources
+          name: grafana-datasources
+        - configMap:
+            name: grafana-dashboard-provider
+          name: grafana-dashboard-provider
+        - configMap:
+            name: grafana-dashboards
+          name: grafana-dashboards

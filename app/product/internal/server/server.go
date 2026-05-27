@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"seckill/app/product/internal/biz"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/riverqueue/river"
 	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+	"github.com/riverqueue/river/rivermigrate"
 )
 
 var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer, NewEtcdClient, NewDiscovery, NewRegistrar, NewRiverClient, NewRiverServer, NewRiverWorkers)
@@ -22,7 +24,24 @@ func NewRiverWorkers(messagingWorker *biz.MessagingWorker) *river.Workers {
 }
 
 func NewRiverClient(pool *pgxpool.Pool, workers *river.Workers) (*river.Client[pgx.Tx], error) {
-	riverClient, err := river.NewClient(riverpgxv5.New(pool), &river.Config{
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	driver := riverpgxv5.New(pool)
+	migrator, err := rivermigrate.New(driver, nil)
+	if err != nil {
+		pool.Close()
+		return nil, fmt.Errorf("create river migrator: %w", err)
+	}
+	if _, err := migrator.Migrate(ctx, rivermigrate.DirectionUp, nil); err != nil {
+		pool.Close()
+		return nil, fmt.Errorf("migrate river schema: %w", err)
+	}
+
+	riverClient, err := river.NewClient(driver, &river.Config{
+		Queues: map[string]river.QueueConfig{
+			river.QueueDefault: {MaxWorkers: 10},
+		},
 		Workers: workers,
 	})
 	if err != nil {

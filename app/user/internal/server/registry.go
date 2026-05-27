@@ -2,6 +2,7 @@ package server
 
 import (
 	"seckill/app/user/internal/conf"
+	"time"
 
 	"github.com/go-kratos/kratos/contrib/registry/etcd/v2"
 	"github.com/go-kratos/kratos/v2/registry"
@@ -11,7 +12,8 @@ import (
 // NewEtcdClient 创建 etcd 客户端
 func NewEtcdClient(c *conf.Registry) *clientv3.Client {
 	client, err := clientv3.New(clientv3.Config{
-		Endpoints: c.Etcd.Endpoints,
+		Endpoints:   c.Etcd.Endpoints,
+		DialTimeout: 5 * time.Second,
 	})
 	if err != nil {
 		panic(err)

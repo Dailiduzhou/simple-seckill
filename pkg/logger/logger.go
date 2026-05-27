@@ -1,6 +1,8 @@
 package logger
 
 import (
+	"os"
+
 	kratoszap "github.com/go-kratos/kratos/contrib/log/zap/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
@@ -25,7 +27,10 @@ func NewJSONLogger() log.Logger {
 
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
-		zapcore.AddSync(hook),
+		zapcore.NewMultiWriteSyncer(
+			zapcore.AddSync(os.Stdout),
+			zapcore.AddSync(hook),
+		),
 		zap.InfoLevel,
 	)
 
