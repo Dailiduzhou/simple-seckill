@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"seckill/app/product/internal/conf"
+	"seckill/app/product/internal/server"
 	"seckill/pkg/logger"
 	"seckill/pkg/trace"
 
@@ -35,7 +36,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, rr registry.Registrar) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, rr registry.Registrar, rs *server.RiverServer) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -45,6 +46,7 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server, rr registry.Reg
 		kratos.Server(
 			gs,
 			hs,
+			rs,
 		),
 		kratos.Registrar(rr),
 	)

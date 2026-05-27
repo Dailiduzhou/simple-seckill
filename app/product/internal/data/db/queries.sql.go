@@ -19,11 +19,11 @@ type DeductStockParams struct {
 }
 
 func (q *Queries) DeductStock(ctx context.Context, arg DeductStockParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, deductStock, arg.ID, arg.Stock)
+	result, err := q.db.Exec(ctx, deductStock, arg.ID, arg.Stock)
 	if err != nil {
 		return 0, err
 	}
-	return result.RowsAffected()
+	return result.RowsAffected(), nil
 }
 
 const getProduct = `-- name: GetProduct :one
@@ -31,7 +31,7 @@ SELECT id, price, stock FROM products WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetProduct(ctx context.Context, id int64) (Product, error) {
-	row := q.db.QueryRowContext(ctx, getProduct, id)
+	row := q.db.QueryRow(ctx, getProduct, id)
 	var i Product
 	err := row.Scan(&i.ID, &i.Price, &i.Stock)
 	return i, err
@@ -47,9 +47,9 @@ type RestoreStockParams struct {
 }
 
 func (q *Queries) RestoreStock(ctx context.Context, arg RestoreStockParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, restoreStock, arg.ID, arg.Stock)
+	result, err := q.db.Exec(ctx, restoreStock, arg.ID, arg.Stock)
 	if err != nil {
 		return 0, err
 	}
-	return result.RowsAffected()
+	return result.RowsAffected(), nil
 }

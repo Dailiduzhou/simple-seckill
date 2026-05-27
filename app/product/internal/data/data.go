@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -15,32 +14,43 @@ import (
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
 	"github.com/google/wire"
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/riverqueue/river"
 	"golang.org/x/sync/singleflight"
 )
 
-var ProviderSet = wire.NewSet(NewData, NewProductRepo, wire.Bind(new(biz.ProductRepo), new(*ProductRepo)))
+var ProviderSet = wire.NewSet(NewData, NewProductRepo, NewPgxPool, wire.Bind(new(biz.ProductRepo), new(*ProductRepo)))
 
 type Data struct {
-	db  *sql.DB
-	rdb *redis.Client
-	rs  *redsync.Redsync
-	q   *db.Queries
-	sg  *singleflight.Group
+	pool        *pgxpool.Pool
+	riverclient *river.Client[pgx.Tx]
+	rdb         *redis.Client
+	rs          *redsync.Redsync
+	q           *db.Queries
+	sg          *singleflight.Group
 }
 
-func NewData(c *conf.Data) (*Data, func(), error) {
-	sqldb, err := sql.Open("pgx", c.Database.Source)
+func NewPgxPool(c *conf.Data) (*pgxpool.Pool, error) {
+	ctx := context.Background()
+
+	pool, err := pgxpool.New(ctx, c.Database.Source)
 	if err != nil {
-		return nil, nil, fmt.Errorf("open postgres: %w", err)
+		return nil, fmt.Errorf("open postgres: %w", err)
 	}
 
-	pingCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	pingCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	if err := sqldb.PingContext(pingCtx); err != nil {
-		sqldb.Close()
-		return nil, nil, fmt.Errorf("ping postgres: %w", err)
+	if err := pool.Ping(pingCtx); err != nil {
+		pool.Close()
+		return nil, fmt.Errorf("ping postgres: %w", err)
 	}
+
+	return pool, nil
+}
+
+func NewData(c *conf.Data, pool *pgxpool.Pool, riverClient *river.Client[pgx.Tx]) (*Data, func(), error) {
+	ctx := context.Background()
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     c.Redis.Addr,
@@ -48,26 +58,27 @@ func NewData(c *conf.Data) (*Data, func(), error) {
 		DB:       0,
 	})
 
-	if err := rdb.Ping(context.Background()).Err(); err != nil {
+	if err := rdb.Ping(ctx).Err(); err != nil {
 		rdb.Close()
-		sqldb.Close()
 		return nil, nil, fmt.Errorf("ping redis: %w", err)
 	}
 
-	pool := goredis.NewPool(rdb)
-	rs := redsync.New(pool)
+	redisPool := goredis.NewPool(rdb)
+	rs := redsync.New(redisPool)
 
 	cleanup := func() {
+		riverClient.Stop(ctx)
 		rdb.Close()
-		sqldb.Close()
+		pool.Close()
 
 		log.Info("closing the data resources")
 	}
 	return &Data{
-		db:  sqldb,
-		rdb: rdb,
-		rs:  rs,
-		q:   db.New(sqldb),
-		sg:  &singleflight.Group{},
+		pool:        pool,
+		riverclient: riverClient,
+		rdb:         rdb,
+		rs:          rs,
+		q:           db.New(pool),
+		sg:          &singleflight.Group{},
 	}, cleanup, nil
 }

@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	stderrors "errors"
 	"fmt"
@@ -17,15 +16,18 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-redsync/redsync/v4"
+	"github.com/jackc/pgx/v5"
+	"github.com/riverqueue/river"
 )
 
 type ProductRepo struct {
-	data *Data
-	log  *log.Helper
+	data        *Data
+	riverclient *river.Client[pgx.Tx]
+	log         *log.Helper
 }
 
 func NewProductRepo(data *Data, logger log.Logger) *ProductRepo {
-	return &ProductRepo{data: data, log: log.NewHelper(logger)}
+	return &ProductRepo{data: data, riverclient: data.riverclient, log: log.NewHelper(logger)}
 }
 
 func (r *ProductRepo) FindByID(ctx context.Context, ID int64) (*biz.Product, error) {
@@ -58,7 +60,7 @@ func (r *ProductRepo) FindByID(ctx context.Context, ID int64) (*biz.Product, err
 		r.log.WithContext(ctx).Infof("product %d fetching from DB", ID)
 		dbProduct, err := r.data.q.GetProduct(ctx, ID)
 		if err != nil {
-			if err == sql.ErrNoRows {
+			if stderrors.Is(err, pgx.ErrNoRows) {
 				return nil, errors.InternalServer("DB_ERROR", "no product")
 			}
 			return nil, errors.InternalServer("DB_ERROR", "failed to fetch product")
@@ -96,6 +98,11 @@ func (r *ProductRepo) DeductStockSaga(ctx context.Context, productID int64, amou
 		r.log.WithContext(ctx).Errorf("delete product cache after deduct: %v", err)
 	}
 
+	_, err = r.riverclient.Insert(ctx, &biz.MessagingArgs{ProductID: productID, Amount: amount}, nil)
+	if err != nil {
+		r.log.WithContext(ctx).Errorf("Error messaging, product ID %d", productID)
+		return err
+	}
 	return nil
 }
 

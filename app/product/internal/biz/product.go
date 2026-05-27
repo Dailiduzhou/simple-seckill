@@ -12,6 +12,7 @@ import (
 	"github.com/dtm-labs/client/dtmgrpc"
 	_ "github.com/dtm-labs/driver-kratos"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/riverqueue/river"
 )
 
 type Product struct {
@@ -41,6 +42,29 @@ func NewProductUsecase(repo ProductRepo, dtmCfg *conf.Dtm, logger log.Logger) *P
 		dtmCfg: dtmCfg,
 		log:    log.NewHelper(logger),
 	}
+}
+
+type MessagingArgs struct {
+	ProductID int64 `json:"product_id"`
+	Amount    int32 `json:"amount"`
+}
+
+func (MessagingArgs) Kind() string { return "order.messaging" }
+
+type MessagingWorker struct {
+	river.WorkerDefaults[MessagingArgs]
+	log *log.Helper
+}
+
+func NewMessagingWorker(logger log.Logger) *MessagingWorker {
+	return &MessagingWorker{log: log.NewHelper(logger)}
+}
+
+func (w *MessagingWorker) Work(ctx context.Context, job *river.Job[MessagingArgs]) error {
+	args := job.Args
+
+	w.log.WithContext(ctx).Infof("No. %d product stock has deducted by %d", args.ProductID, args.Amount)
+	return nil
 }
 
 func (uc *ProductUsecase) DeductStockSaga(ctx context.Context, productID int64, amount int32) error {
