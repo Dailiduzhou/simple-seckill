@@ -6,18 +6,20 @@ import (
 	"time"
 
 	productv1 "seckill/api/product/v1"
+	userv1 "seckill/api/user/v1"
 	"seckill/app/product/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 const (
-	StatusWaiting    = "WAITING"
-	StatusProcessing = "PROCESSING"
-	StatusSuccess    = "SUCCESS"
-	StatusSoldOut    = "SOLD_OUT"
-	StatusDegraded   = "DEGRADED"
-	StatusFailed     = "FAILED"
+	StatusWaiting            = "WAITING"
+	StatusProcessing         = "PROCESSING"
+	StatusSuccess            = "SUCCESS"
+	StatusSoldOut            = "SOLD_OUT"
+	StatusBalanceInsufficient = "BALANCE_INSUFFICIENT"
+	StatusDegraded           = "DEGRADED"
+	StatusFailed             = "FAILED"
 )
 
 type Product struct {
@@ -77,21 +79,23 @@ type SeckillArgs struct {
 func (SeckillArgs) Kind() string { return "seckill.request" }
 
 type ProductUsecase struct {
-	productRepo    ProductRepo
-	seckillReqRepo SeckillRequestRepo
-	jobRepo        SeckillJobRepo
-	productID      int64
-	amount         int32
-	maxWait        time.Duration
-	queueName      string
-	queueWorkers   int
-	log            *log.Helper
+	productRepo     ProductRepo
+	seckillReqRepo  SeckillRequestRepo
+	jobRepo         SeckillJobRepo
+	sagaCoordinator SAGACoordinator
+	productID       int64
+	amount          int32
+	maxWait         time.Duration
+	queueName       string
+	queueWorkers    int
+	log             *log.Helper
 }
 
 func NewProductUsecase(
 	productRepo ProductRepo,
 	seckillReqRepo SeckillRequestRepo,
 	jobRepo SeckillJobRepo,
+	sagaCoordinator SAGACoordinator,
 	skcCfg *conf.Seckill,
 	logger log.Logger,
 ) *ProductUsecase {
@@ -113,15 +117,16 @@ func NewProductUsecase(
 		queueWorkers = 10
 	}
 	return &ProductUsecase{
-		productRepo:    productRepo,
-		seckillReqRepo: seckillReqRepo,
-		jobRepo:        jobRepo,
-		productID:      productID,
-		amount:         amount,
-		maxWait:        maxWait,
-		queueName:      queueName,
-		queueWorkers:   queueWorkers,
-		log:            log.NewHelper(logger),
+		productRepo:     productRepo,
+		seckillReqRepo:  seckillReqRepo,
+		jobRepo:         jobRepo,
+		sagaCoordinator: sagaCoordinator,
+		productID:       productID,
+		amount:          amount,
+		maxWait:         maxWait,
+		queueName:       queueName,
+		queueWorkers:    queueWorkers,
+		log:             log.NewHelper(logger),
 	}
 }
 
@@ -140,11 +145,13 @@ func (uc *ProductUsecase) HandleSeckill(ctx context.Context, args *SeckillArgs) 
 		return err
 	}
 
-	err := uc.executeSeckill(ctx, args.UserID, args.ProductID, args.Amount)
+	err := uc.executeSeckill(ctx, args.RequestID, args.UserID, args.ProductID, args.Amount)
 	if err != nil {
 		status := StatusFailed
 		if productv1.IsSoldOut(err) {
 			status = StatusSoldOut
+		} else if userv1.IsLowBalance(err) {
+			status = StatusBalanceInsufficient
 		}
 		if updateErr := uc.seckillReqRepo.UpdateSeckillRequest(ctx, args.RequestID, status, err.Error()); updateErr != nil {
 			uc.log.WithContext(ctx).Errorf("update seckill request %s failed: %v", args.RequestID, updateErr)
@@ -203,11 +210,17 @@ func (uc *ProductUsecase) GetProduct(ctx context.Context, productID int64) (*Pro
 	return uc.productRepo.FindByID(ctx, productID)
 }
 
-func (uc *ProductUsecase) executeSeckill(ctx context.Context, userID, productID int64, amount int32) error {
+func (uc *ProductUsecase) executeSeckill(ctx context.Context, requestID string, userID, productID int64, amount int32) error {
 	uc.log.WithContext(ctx).Infof("Seckill: user_id=%d", userID)
 
-	if err := uc.productRepo.DeductStock(ctx, productID, amount); err != nil {
-		uc.log.WithContext(ctx).Errorf("Seckill: deduct stock: %v", err)
+	gid := fmt.Sprintf("seckill_saga_%s", requestID)
+	if err := uc.sagaCoordinator.ExecuteSeckillSaga(ctx, &SeckillSagaArgs{
+		GID:       gid,
+		UserID:    userID,
+		ProductID: productID,
+		Amount:    amount,
+	}); err != nil {
+		uc.log.WithContext(ctx).Errorf("Seckill: saga failed: %v", err)
 		return err
 	}
 
@@ -228,6 +241,8 @@ func MapSeckillStatus(status string) productv1.SeckillStatus {
 		return productv1.SeckillStatus_SECKILL_STATUS_SUCCESS
 	case StatusSoldOut:
 		return productv1.SeckillStatus_SECKILL_STATUS_SOLD_OUT
+	case StatusBalanceInsufficient:
+		return productv1.SeckillStatus_SECKILL_STATUS_BALANCE_INSUFFICIENT
 	case StatusDegraded:
 		return productv1.SeckillStatus_SECKILL_STATUS_DEGRADED
 	default:

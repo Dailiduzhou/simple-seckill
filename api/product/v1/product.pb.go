@@ -74,12 +74,13 @@ func (Result) EnumDescriptor() ([]byte, []int) {
 type SeckillStatus int32
 
 const (
-	SeckillStatus_SECKILL_STATUS_WAITING    SeckillStatus = 0
-	SeckillStatus_SECKILL_STATUS_PROCESSING SeckillStatus = 1
-	SeckillStatus_SECKILL_STATUS_SUCCESS    SeckillStatus = 2
-	SeckillStatus_SECKILL_STATUS_SOLD_OUT   SeckillStatus = 3
-	SeckillStatus_SECKILL_STATUS_DEGRADED   SeckillStatus = 4
-	SeckillStatus_SECKILL_STATUS_FAILED     SeckillStatus = 5
+	SeckillStatus_SECKILL_STATUS_WAITING                SeckillStatus = 0
+	SeckillStatus_SECKILL_STATUS_PROCESSING             SeckillStatus = 1
+	SeckillStatus_SECKILL_STATUS_SUCCESS                SeckillStatus = 2
+	SeckillStatus_SECKILL_STATUS_SOLD_OUT               SeckillStatus = 3
+	SeckillStatus_SECKILL_STATUS_DEGRADED               SeckillStatus = 4
+	SeckillStatus_SECKILL_STATUS_FAILED                 SeckillStatus = 5
+	SeckillStatus_SECKILL_STATUS_BALANCE_INSUFFICIENT   SeckillStatus = 6
 )
 
 // Enum value maps for SeckillStatus.
@@ -91,14 +92,16 @@ var (
 		3: "SECKILL_STATUS_SOLD_OUT",
 		4: "SECKILL_STATUS_DEGRADED",
 		5: "SECKILL_STATUS_FAILED",
+		6: "SECKILL_STATUS_BALANCE_INSUFFICIENT",
 	}
 	SeckillStatus_value = map[string]int32{
-		"SECKILL_STATUS_WAITING":    0,
-		"SECKILL_STATUS_PROCESSING": 1,
-		"SECKILL_STATUS_SUCCESS":    2,
-		"SECKILL_STATUS_SOLD_OUT":   3,
-		"SECKILL_STATUS_DEGRADED":   4,
-		"SECKILL_STATUS_FAILED":     5,
+		"SECKILL_STATUS_WAITING":                0,
+		"SECKILL_STATUS_PROCESSING":             1,
+		"SECKILL_STATUS_SUCCESS":                2,
+		"SECKILL_STATUS_SOLD_OUT":               3,
+		"SECKILL_STATUS_DEGRADED":               4,
+		"SECKILL_STATUS_FAILED":                 5,
+		"SECKILL_STATUS_BALANCE_INSUFFICIENT":   6,
 	}
 )
 

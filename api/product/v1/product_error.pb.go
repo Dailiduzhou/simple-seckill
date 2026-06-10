@@ -25,11 +25,12 @@ const (
 type UserErrorReason int32
 
 const (
-	UserErrorReason_SOLD_OUT          UserErrorReason = 0
-	UserErrorReason_SERVICE_BUSY      UserErrorReason = 1
-	UserErrorReason_QUEUE_TIMEOUT     UserErrorReason = 2
-	UserErrorReason_QUEUE_DUPLICATE   UserErrorReason = 3
-	UserErrorReason_REQUEST_NOT_FOUND UserErrorReason = 4
+	UserErrorReason_SOLD_OUT             UserErrorReason = 0
+	UserErrorReason_SERVICE_BUSY         UserErrorReason = 1
+	UserErrorReason_QUEUE_TIMEOUT        UserErrorReason = 2
+	UserErrorReason_QUEUE_DUPLICATE      UserErrorReason = 3
+	UserErrorReason_REQUEST_NOT_FOUND    UserErrorReason = 4
+	UserErrorReason_BALANCE_INSUFFICIENT UserErrorReason = 5
 )
 
 // Enum value maps for UserErrorReason.
@@ -40,13 +41,15 @@ var (
 		2: "QUEUE_TIMEOUT",
 		3: "QUEUE_DUPLICATE",
 		4: "REQUEST_NOT_FOUND",
+		5: "BALANCE_INSUFFICIENT",
 	}
 	UserErrorReason_value = map[string]int32{
-		"SOLD_OUT":          0,
-		"SERVICE_BUSY":      1,
-		"QUEUE_TIMEOUT":     2,
-		"QUEUE_DUPLICATE":   3,
-		"REQUEST_NOT_FOUND": 4,
+		"SOLD_OUT":             0,
+		"SERVICE_BUSY":         1,
+		"QUEUE_TIMEOUT":        2,
+		"QUEUE_DUPLICATE":      3,
+		"REQUEST_NOT_FOUND":    4,
+		"BALANCE_INSUFFICIENT": 5,
 	}
 )
 

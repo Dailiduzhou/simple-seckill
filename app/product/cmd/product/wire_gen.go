@@ -23,7 +23,7 @@ import (
 
 // Injectors from wire.go:
 
-func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, seckill *conf.Seckill, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, dtmCfg *conf.Dtm, seckill *conf.Seckill, logger log.Logger) (*kratos.App, func(), error) {
 	pool, err := data.NewPgxPool(confData)
 	if err != nil {
 		return nil, nil, err
@@ -40,7 +40,8 @@ func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Regist
 	productRepoImpl := data.NewProductRepo(dataData, logger)
 	seckillRequestRepoImpl := data.NewSeckillRequestRepo(dataData, logger)
 	seckillJobRepoImpl := data.NewSeckillJobRepo(riverClient)
-	productUsecase := biz.NewProductUsecase(productRepoImpl, seckillRequestRepoImpl, seckillJobRepoImpl, seckill, logger)
+	sagaData := data.NewSAGAData(dtmCfg)
+	productUsecase := biz.NewProductUsecase(productRepoImpl, seckillRequestRepoImpl, seckillJobRepoImpl, sagaData, seckill, logger)
 	seckillWorker := worker.NewSeckillWorker(productUsecase, logger)
 	messagingWorker := worker.NewMessagingWorker(logger)
 	productService := service.NewProductService(productUsecase, logger)

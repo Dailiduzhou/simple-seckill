@@ -26,9 +26,11 @@ var ProviderSet = wire.NewSet(
 	NewProductRepo,
 	NewSeckillRequestRepo,
 	NewSeckillJobRepo,
+	NewSAGAData,
 	wire.Bind(new(biz.ProductRepo), new(*ProductRepoImpl)),
 	wire.Bind(new(biz.SeckillRequestRepo), new(*SeckillRequestRepoImpl)),
 	wire.Bind(new(biz.SeckillJobRepo), new(*SeckillJobRepoImpl)),
+	wire.Bind(new(biz.SAGACoordinator), new(*SAGAData)),
 )
 
 type Data struct {

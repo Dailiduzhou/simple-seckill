@@ -13,4 +13,5 @@ enum UserErrorReason {
   QUEUE_TIMEOUT = 2 [(errors.code) = 504];
   QUEUE_DUPLICATE = 3 [(errors.code) = 409];
   REQUEST_NOT_FOUND = 4 [(errors.code) = 404];
+  BALANCE_INSUFFICIENT = 5 [(errors.code) = 403];
 }

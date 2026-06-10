@@ -70,3 +70,15 @@ func IsRequestNotFound(err error) bool {
 func ErrorRequestNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, UserErrorReason_REQUEST_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
+
+func IsBalanceInsufficient(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_BALANCE_INSUFFICIENT.String() && e.Code == 403
+}
+
+func ErrorBalanceInsufficient(format string, args ...interface{}) *errors.Error {
+	return errors.New(403, UserErrorReason_BALANCE_INSUFFICIENT.String(), fmt.Sprintf(format, args...))
+}
