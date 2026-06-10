@@ -63,3 +63,6 @@ func (s *ProductService) RestoreStock(ctx context.Context, req *pb.RestoreStockR
 	}
 	return &pb.RestoreStockResp{Success: true}, nil
 }
+
+func (s *ProductService) GetProduct(ctx context.Context, req *pb.GetProductReq) (*pb.GetProductResp, error) {
+}
