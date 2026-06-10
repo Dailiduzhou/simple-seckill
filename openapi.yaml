@@ -78,6 +78,30 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/seckill/status:
+        post:
+            tags:
+                - Product
+            operationId: Product_GetSeckillStatus
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GetSeckillStatusReq'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetSeckillStatusResp'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
     schemas:
         DeductStockSagaReq:
@@ -109,6 +133,23 @@ components:
                 stock:
                     type: integer
                     format: int32
+        GetSeckillStatusReq:
+            type: object
+            properties:
+                requestID:
+                    type: string
+        GetSeckillStatusResp:
+            type: object
+            properties:
+                status:
+                    type: integer
+                    format: enum
+                reason:
+                    type: string
+                userID:
+                    type: string
+                productID:
+                    type: string
         GoogleProtobufAny:
             type: object
             properties:
@@ -128,6 +169,8 @@ components:
                 res:
                     type: integer
                     format: enum
+                requestID:
+                    type: string
         Status:
             type: object
             properties:

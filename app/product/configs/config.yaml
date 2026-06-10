@@ -21,5 +21,11 @@ dtm:
   addr: dtm:36790
   prod_grpc_addr: product:9001
   user_grpc_addr: user:9000
+seckill:
+  product_id: 1
+  amount: 1
+  max_wait: 2s
+  queue_name: seckill
+  queue_workers: 10
 trace:
   endpoint: jaeger:4317

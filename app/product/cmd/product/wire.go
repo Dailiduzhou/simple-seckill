@@ -9,12 +9,13 @@ import (
 	"seckill/app/product/internal/data"
 	"seckill/app/product/internal/server"
 	"seckill/app/product/internal/service"
+	"seckill/app/product/internal/worker"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 )
 
-func wireApp(*conf.Server, *conf.Data, *conf.Registry, *conf.Dtm, log.Logger) (*kratos.App, func(), error) {
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+func wireApp(*conf.Server, *conf.Data, *conf.Registry, *conf.Seckill, log.Logger) (*kratos.App, func(), error) {
+	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, worker.ProviderSet, newApp))
 }

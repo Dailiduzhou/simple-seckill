@@ -14,6 +14,7 @@ import (
 	"seckill/app/product/internal/data"
 	"seckill/app/product/internal/server"
 	"seckill/app/product/internal/service"
+	"seckill/app/product/internal/worker"
 )
 
 import (
@@ -22,29 +23,33 @@ import (
 
 // Injectors from wire.go:
 
-func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, dtm *conf.Dtm, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, confData *conf.Data, registry *conf.Registry, seckill *conf.Seckill, logger log.Logger) (*kratos.App, func(), error) {
 	pool, err := data.NewPgxPool(confData)
 	if err != nil {
 		return nil, nil, err
 	}
-	messagingWorker := biz.NewMessagingWorker(logger)
-	workers := server.NewRiverWorkers(messagingWorker)
-	client, err := server.NewRiverClient(pool, workers)
+	workers := server.NewRiverWorkers()
+	riverClient, err := server.NewRiverClient(pool, workers, seckill)
 	if err != nil {
 		return nil, nil, err
 	}
-	dataData, cleanup, err := data.NewData(confData, pool, client)
+	dataData, cleanup, err := data.NewData(confData, pool, riverClient)
 	if err != nil {
 		return nil, nil, err
 	}
-	productRepo := data.NewProductRepo(dataData, logger)
-	productUsecase := biz.NewProductUsecase(productRepo, dtm, logger)
+	productRepoImpl := data.NewProductRepo(dataData, logger)
+	seckillRequestRepoImpl := data.NewSeckillRequestRepo(dataData, logger)
+	seckillJobRepoImpl := data.NewSeckillJobRepo(riverClient)
+	productUsecase := biz.NewProductUsecase(productRepoImpl, seckillRequestRepoImpl, seckillJobRepoImpl, seckill, logger)
+	seckillWorker := worker.NewSeckillWorker(productUsecase, logger)
+	messagingWorker := worker.NewMessagingWorker(logger)
 	productService := service.NewProductService(productUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, productService, logger)
 	httpServer := server.NewHTTPServer(confServer, productService, logger)
 	clientv3Client := server.NewEtcdClient(registry)
 	registrar := server.NewRegistrar(clientv3Client)
-	riverServer := server.NewRiverServer(client)
+	riverServer := server.NewRiverServer(riverClient)
+	server.RegisterRiverWorkers(workers, seckillWorker, messagingWorker)
 	app := newApp(logger, grpcServer, httpServer, registrar, riverServer)
 	return app, func() {
 		cleanup()

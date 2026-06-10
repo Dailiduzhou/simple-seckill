@@ -10,6 +10,7 @@ message Bootstrap {
   Data data = 2;
   Registry registry = 3;
   Dtm dtm = 4;
+  Seckill seckill = 5;
 }
 
 message Dtm {
@@ -52,4 +53,12 @@ message Data {
   }
   Database database = 1;
   Redis redis = 2;
+}
+
+message Seckill {
+  int64 product_id = 1;
+  int32 amount = 2;
+  google.protobuf.Duration max_wait = 3;
+  string queue_name = 4;
+  int32 queue_workers = 5;
 }

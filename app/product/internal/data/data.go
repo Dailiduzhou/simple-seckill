@@ -20,15 +20,23 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
-var ProviderSet = wire.NewSet(NewData, NewProductRepo, NewPgxPool, wire.Bind(new(biz.ProductRepo), new(*ProductRepo)))
+var ProviderSet = wire.NewSet(
+	NewData,
+	NewPgxPool,
+	NewProductRepo,
+	NewSeckillRequestRepo,
+	NewSeckillJobRepo,
+	wire.Bind(new(biz.ProductRepo), new(*ProductRepoImpl)),
+	wire.Bind(new(biz.SeckillRequestRepo), new(*SeckillRequestRepoImpl)),
+	wire.Bind(new(biz.SeckillJobRepo), new(*SeckillJobRepoImpl)),
+)
 
 type Data struct {
-	pool        *pgxpool.Pool
-	riverclient *river.Client[pgx.Tx]
-	rdb         *redis.Client
-	rs          *redsync.Redsync
-	q           *db.Queries
-	sg          *singleflight.Group
+	pool *pgxpool.Pool
+	rdb  *redis.Client
+	rs   *redsync.Redsync
+	q    *db.Queries
+	sg   *singleflight.Group
 }
 
 func NewPgxPool(c *conf.Data) (*pgxpool.Pool, error) {
@@ -74,11 +82,10 @@ func NewData(c *conf.Data, pool *pgxpool.Pool, riverClient *river.Client[pgx.Tx]
 		log.Info("closing the data resources")
 	}
 	return &Data{
-		pool:        pool,
-		riverclient: riverClient,
-		rdb:         rdb,
-		rs:          rs,
-		q:           db.New(pool),
-		sg:          &singleflight.Group{},
+		pool: pool,
+		rdb:  rdb,
+		rs:   rs,
+		q:    db.New(pool),
+		sg:   &singleflight.Group{},
 	}, cleanup, nil
 }

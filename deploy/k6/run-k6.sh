@@ -6,10 +6,14 @@ NAMESPACE="${NAMESPACE:-default}"
 JOB_NAME="${JOB_NAME:-seckill-k6}"
 SCRIPT_PATH="${SCRIPT_PATH:-deploy/k6/seckill.js}"
 BASE_URL="${BASE_URL:-http://product:8000}"
+SECKILL_PATH="${SECKILL_PATH:-/api/seckill}"
+STATUS_PATH="${STATUS_PATH:-/api/seckill/status}"
 USER_COUNT="${USER_COUNT:-50000}"
 START_USER_ID="${START_USER_ID:-1}"
 K6_STAGES="${K6_STAGES:-30s:20,1m:50,30s:0}"
 HTTP_TIMEOUT="${HTTP_TIMEOUT:-5s}"
+STATUS_TIMEOUT_MS="${STATUS_TIMEOUT_MS:-5000}"
+POLL_INTERVAL_MS="${POLL_INTERVAL_MS:-200}"
 SLEEP_MS="${SLEEP_MS:-0}"
 
 if [[ ! -f "${SCRIPT_PATH}" ]]; then
@@ -49,6 +53,10 @@ spec:
           env:
             - name: BASE_URL
               value: "${BASE_URL}"
+            - name: SECKILL_PATH
+              value: "${SECKILL_PATH}"
+            - name: STATUS_PATH
+              value: "${STATUS_PATH}"
             - name: USER_COUNT
               value: "${USER_COUNT}"
             - name: START_USER_ID
@@ -57,6 +65,10 @@ spec:
               value: "${K6_STAGES}"
             - name: HTTP_TIMEOUT
               value: "${HTTP_TIMEOUT}"
+            - name: STATUS_TIMEOUT_MS
+              value: "${STATUS_TIMEOUT_MS}"
+            - name: POLL_INTERVAL_MS
+              value: "${POLL_INTERVAL_MS}"
             - name: SLEEP_MS
               value: "${SLEEP_MS}"
           volumeMounts:

@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"seckill/app/product/internal/biz"
+	"seckill/app/product/internal/conf"
+	"seckill/app/product/internal/worker"
 
 	"github.com/google/wire"
 	"github.com/jackc/pgx/v5"
@@ -17,15 +18,29 @@ import (
 
 var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer, NewEtcdClient, NewDiscovery, NewRegistrar, NewRiverClient, NewRiverServer, NewRiverWorkers)
 
-func NewRiverWorkers(messagingWorker *biz.MessagingWorker) *river.Workers {
-	workers := river.NewWorkers()
-	river.AddWorker(workers, messagingWorker)
-	return workers
+// NewRiverWorkers creates an empty Workers container. Workers are registered
+// after the full dependency graph is wired via RegisterRiverWorkers.
+func NewRiverWorkers() *river.Workers {
+	return river.NewWorkers()
 }
 
-func NewRiverClient(pool *pgxpool.Pool, workers *river.Workers) (*river.Client[pgx.Tx], error) {
+// RegisterRiverWorkers adds workers to the container after all dependencies are wired.
+func RegisterRiverWorkers(workers *river.Workers, sw *worker.SeckillWorker, mw *worker.MessagingWorker) {
+	river.AddWorker(workers, sw)
+	river.AddWorker(workers, mw)
+}
+
+func NewRiverClient(pool *pgxpool.Pool, workers *river.Workers, seckillCfg *conf.Seckill) (*river.Client[pgx.Tx], error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+	queueName := seckillCfg.GetQueueName()
+	if queueName == "" {
+		queueName = "seckill"
+	}
+	queueWorkers := int(seckillCfg.GetQueueWorkers())
+	if queueWorkers <= 0 {
+		queueWorkers = 10
+	}
 
 	driver := riverpgxv5.New(pool)
 	migrator, err := rivermigrate.New(driver, nil)
@@ -41,6 +56,7 @@ func NewRiverClient(pool *pgxpool.Pool, workers *river.Workers) (*river.Client[p
 	riverClient, err := river.NewClient(driver, &river.Config{
 		Queues: map[string]river.QueueConfig{
 			river.QueueDefault: {MaxWorkers: 10},
+			queueName:           {MaxWorkers: queueWorkers},
 		},
 		Workers: workers,
 	})

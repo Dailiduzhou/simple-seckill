@@ -22,7 +22,7 @@ func NewProductService(uc *biz.ProductUsecase, logger log.Logger) *ProductServic
 
 func (s *ProductService) Seckill(ctx context.Context, req *pb.SeckillReq) (*pb.SeckillResp, error) {
 	start := time.Now()
-	result := "success"
+	result := "queued"
 	errMsg := ""
 	defer func() {
 		s.log.WithContext(ctx).Infow(
@@ -36,14 +36,14 @@ func (s *ProductService) Seckill(ctx context.Context, req *pb.SeckillReq) (*pb.S
 		)
 	}()
 
-	err := s.uc.Seckill(ctx, req.UserID)
+	request, err := s.uc.EnqueueSeckill(ctx, req.UserID)
 	if err != nil {
 		result = "error"
 		errMsg = err.Error()
 		s.log.WithContext(ctx).Errorf("Seckill: user_id=%d %v", req.UserID, err)
 		return &pb.SeckillResp{Res: pb.Result_FAILURE}, err
 	}
-	return &pb.SeckillResp{Res: pb.Result_SUCCESS}, nil
+	return &pb.SeckillResp{Res: pb.Result_QUEUED, RequestID: request.RequestID}, nil
 }
 
 func (s *ProductService) DeductStockSaga(ctx context.Context, req *pb.DeductStockSagaReq) (*pb.DeductStockSagaResp, error) {
@@ -65,4 +65,26 @@ func (s *ProductService) RestoreStock(ctx context.Context, req *pb.RestoreStockR
 }
 
 func (s *ProductService) GetProduct(ctx context.Context, req *pb.GetProductReq) (*pb.GetProductResp, error) {
+	product, err := s.uc.GetProduct(ctx, req.ProductID)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetProductResp{
+		ProductID: product.ID,
+		Price:     product.Price,
+		Stock:     product.Stock,
+	}, nil
+}
+
+func (s *ProductService) GetSeckillStatus(ctx context.Context, req *pb.GetSeckillStatusReq) (*pb.GetSeckillStatusResp, error) {
+	request, err := s.uc.GetSeckillStatus(ctx, req.RequestID)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetSeckillStatusResp{
+		Status:    biz.MapSeckillStatus(request.Status),
+		Reason:    request.Reason,
+		UserID:    request.UserID,
+		ProductID: request.ProductID,
+	}, nil
 }
