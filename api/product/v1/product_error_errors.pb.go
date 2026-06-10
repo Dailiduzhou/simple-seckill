@@ -34,3 +34,39 @@ func IsServiceBusy(err error) bool {
 func ErrorServiceBusy(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, UserErrorReason_SERVICE_BUSY.String(), fmt.Sprintf(format, args...))
 }
+
+func IsQueueTimeout(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_QUEUE_TIMEOUT.String() && e.Code == 504
+}
+
+func ErrorQueueTimeout(format string, args ...interface{}) *errors.Error {
+	return errors.New(504, UserErrorReason_QUEUE_TIMEOUT.String(), fmt.Sprintf(format, args...))
+}
+
+func IsQueueDuplicate(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_QUEUE_DUPLICATE.String() && e.Code == 409
+}
+
+func ErrorQueueDuplicate(format string, args ...interface{}) *errors.Error {
+	return errors.New(409, UserErrorReason_QUEUE_DUPLICATE.String(), fmt.Sprintf(format, args...))
+}
+
+func IsRequestNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == UserErrorReason_REQUEST_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorRequestNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, UserErrorReason_REQUEST_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}

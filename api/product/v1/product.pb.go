@@ -27,6 +27,7 @@ type Result int32
 const (
 	Result_SUCCESS Result = 0
 	Result_FAILURE Result = 1
+	Result_QUEUED  Result = 2
 )
 
 // Enum value maps for Result.
@@ -34,10 +35,12 @@ var (
 	Result_name = map[int32]string{
 		0: "SUCCESS",
 		1: "FAILURE",
+		2: "QUEUED",
 	}
 	Result_value = map[string]int32{
 		"SUCCESS": 0,
 		"FAILURE": 1,
+		"QUEUED":  2,
 	}
 )
 
@@ -66,6 +69,64 @@ func (x Result) Number() protoreflect.EnumNumber {
 // Deprecated: Use Result.Descriptor instead.
 func (Result) EnumDescriptor() ([]byte, []int) {
 	return file_api_product_v1_product_proto_rawDescGZIP(), []int{0}
+}
+
+type SeckillStatus int32
+
+const (
+	SeckillStatus_SECKILL_STATUS_WAITING    SeckillStatus = 0
+	SeckillStatus_SECKILL_STATUS_PROCESSING SeckillStatus = 1
+	SeckillStatus_SECKILL_STATUS_SUCCESS    SeckillStatus = 2
+	SeckillStatus_SECKILL_STATUS_SOLD_OUT   SeckillStatus = 3
+	SeckillStatus_SECKILL_STATUS_DEGRADED   SeckillStatus = 4
+	SeckillStatus_SECKILL_STATUS_FAILED     SeckillStatus = 5
+)
+
+// Enum value maps for SeckillStatus.
+var (
+	SeckillStatus_name = map[int32]string{
+		0: "SECKILL_STATUS_WAITING",
+		1: "SECKILL_STATUS_PROCESSING",
+		2: "SECKILL_STATUS_SUCCESS",
+		3: "SECKILL_STATUS_SOLD_OUT",
+		4: "SECKILL_STATUS_DEGRADED",
+		5: "SECKILL_STATUS_FAILED",
+	}
+	SeckillStatus_value = map[string]int32{
+		"SECKILL_STATUS_WAITING":    0,
+		"SECKILL_STATUS_PROCESSING": 1,
+		"SECKILL_STATUS_SUCCESS":    2,
+		"SECKILL_STATUS_SOLD_OUT":   3,
+		"SECKILL_STATUS_DEGRADED":   4,
+		"SECKILL_STATUS_FAILED":     5,
+	}
+)
+
+func (x SeckillStatus) Enum() *SeckillStatus {
+	p := new(SeckillStatus)
+	*p = x
+	return p
+}
+
+func (x SeckillStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SeckillStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_product_v1_product_proto_enumTypes[1].Descriptor()
+}
+
+func (SeckillStatus) Type() protoreflect.EnumType {
+	return &file_api_product_v1_product_proto_enumTypes[1]
+}
+
+func (x SeckillStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SeckillStatus.Descriptor instead.
+func (SeckillStatus) EnumDescriptor() ([]byte, []int) {
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{1}
 }
 
 type SeckillReq struct {
@@ -115,6 +176,7 @@ func (x *SeckillReq) GetUserID() int64 {
 type SeckillResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Res           Result                 `protobuf:"varint,1,opt,name=res,proto3,enum=api.product.v1.Result" json:"res,omitempty"`
+	RequestID     string                 `protobuf:"bytes,2,opt,name=requestID,proto3" json:"requestID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -156,6 +218,125 @@ func (x *SeckillResp) GetRes() Result {
 	return Result_SUCCESS
 }
 
+func (x *SeckillResp) GetRequestID() string {
+	if x != nil {
+		return x.RequestID
+	}
+	return ""
+}
+
+type GetSeckillStatusReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RequestID     string                 `protobuf:"bytes,1,opt,name=requestID,proto3" json:"requestID,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSeckillStatusReq) Reset() {
+	*x = GetSeckillStatusReq{}
+	mi := &file_api_product_v1_product_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSeckillStatusReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSeckillStatusReq) ProtoMessage() {}
+
+func (x *GetSeckillStatusReq) ProtoReflect() protoreflect.Message {
+	mi := &file_api_product_v1_product_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSeckillStatusReq.ProtoReflect.Descriptor instead.
+func (*GetSeckillStatusReq) Descriptor() ([]byte, []int) {
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GetSeckillStatusReq) GetRequestID() string {
+	if x != nil {
+		return x.RequestID
+	}
+	return ""
+}
+
+type GetSeckillStatusResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        SeckillStatus          `protobuf:"varint,1,opt,name=status,proto3,enum=api.product.v1.SeckillStatus" json:"status,omitempty"`
+	Reason        string                 `protobuf:"bytes,2,opt,name=reason,proto3" json:"reason,omitempty"`
+	UserID        int64                  `protobuf:"varint,3,opt,name=userID,proto3" json:"userID,omitempty"`
+	ProductID     int64                  `protobuf:"varint,4,opt,name=productID,proto3" json:"productID,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSeckillStatusResp) Reset() {
+	*x = GetSeckillStatusResp{}
+	mi := &file_api_product_v1_product_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSeckillStatusResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSeckillStatusResp) ProtoMessage() {}
+
+func (x *GetSeckillStatusResp) ProtoReflect() protoreflect.Message {
+	mi := &file_api_product_v1_product_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSeckillStatusResp.ProtoReflect.Descriptor instead.
+func (*GetSeckillStatusResp) Descriptor() ([]byte, []int) {
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetSeckillStatusResp) GetStatus() SeckillStatus {
+	if x != nil {
+		return x.Status
+	}
+	return SeckillStatus_SECKILL_STATUS_WAITING
+}
+
+func (x *GetSeckillStatusResp) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *GetSeckillStatusResp) GetUserID() int64 {
+	if x != nil {
+		return x.UserID
+	}
+	return 0
+}
+
+func (x *GetSeckillStatusResp) GetProductID() int64 {
+	if x != nil {
+		return x.ProductID
+	}
+	return 0
+}
+
 type DeductStockSagaReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProductID     int64                  `protobuf:"varint,1,opt,name=productID,proto3" json:"productID,omitempty"`
@@ -166,7 +347,7 @@ type DeductStockSagaReq struct {
 
 func (x *DeductStockSagaReq) Reset() {
 	*x = DeductStockSagaReq{}
-	mi := &file_api_product_v1_product_proto_msgTypes[2]
+	mi := &file_api_product_v1_product_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -178,7 +359,7 @@ func (x *DeductStockSagaReq) String() string {
 func (*DeductStockSagaReq) ProtoMessage() {}
 
 func (x *DeductStockSagaReq) ProtoReflect() protoreflect.Message {
-	mi := &file_api_product_v1_product_proto_msgTypes[2]
+	mi := &file_api_product_v1_product_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -191,7 +372,7 @@ func (x *DeductStockSagaReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeductStockSagaReq.ProtoReflect.Descriptor instead.
 func (*DeductStockSagaReq) Descriptor() ([]byte, []int) {
-	return file_api_product_v1_product_proto_rawDescGZIP(), []int{2}
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *DeductStockSagaReq) GetProductID() int64 {
@@ -217,7 +398,7 @@ type DeductStockSagaResp struct {
 
 func (x *DeductStockSagaResp) Reset() {
 	*x = DeductStockSagaResp{}
-	mi := &file_api_product_v1_product_proto_msgTypes[3]
+	mi := &file_api_product_v1_product_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -229,7 +410,7 @@ func (x *DeductStockSagaResp) String() string {
 func (*DeductStockSagaResp) ProtoMessage() {}
 
 func (x *DeductStockSagaResp) ProtoReflect() protoreflect.Message {
-	mi := &file_api_product_v1_product_proto_msgTypes[3]
+	mi := &file_api_product_v1_product_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -242,7 +423,7 @@ func (x *DeductStockSagaResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeductStockSagaResp.ProtoReflect.Descriptor instead.
 func (*DeductStockSagaResp) Descriptor() ([]byte, []int) {
-	return file_api_product_v1_product_proto_rawDescGZIP(), []int{3}
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeductStockSagaResp) GetSuccess() bool {
@@ -262,7 +443,7 @@ type RestoreStockReq struct {
 
 func (x *RestoreStockReq) Reset() {
 	*x = RestoreStockReq{}
-	mi := &file_api_product_v1_product_proto_msgTypes[4]
+	mi := &file_api_product_v1_product_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -274,7 +455,7 @@ func (x *RestoreStockReq) String() string {
 func (*RestoreStockReq) ProtoMessage() {}
 
 func (x *RestoreStockReq) ProtoReflect() protoreflect.Message {
-	mi := &file_api_product_v1_product_proto_msgTypes[4]
+	mi := &file_api_product_v1_product_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -287,7 +468,7 @@ func (x *RestoreStockReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreStockReq.ProtoReflect.Descriptor instead.
 func (*RestoreStockReq) Descriptor() ([]byte, []int) {
-	return file_api_product_v1_product_proto_rawDescGZIP(), []int{4}
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *RestoreStockReq) GetProductID() int64 {
@@ -313,7 +494,7 @@ type RestoreStockResp struct {
 
 func (x *RestoreStockResp) Reset() {
 	*x = RestoreStockResp{}
-	mi := &file_api_product_v1_product_proto_msgTypes[5]
+	mi := &file_api_product_v1_product_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -325,7 +506,7 @@ func (x *RestoreStockResp) String() string {
 func (*RestoreStockResp) ProtoMessage() {}
 
 func (x *RestoreStockResp) ProtoReflect() protoreflect.Message {
-	mi := &file_api_product_v1_product_proto_msgTypes[5]
+	mi := &file_api_product_v1_product_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -338,7 +519,7 @@ func (x *RestoreStockResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RestoreStockResp.ProtoReflect.Descriptor instead.
 func (*RestoreStockResp) Descriptor() ([]byte, []int) {
-	return file_api_product_v1_product_proto_rawDescGZIP(), []int{5}
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *RestoreStockResp) GetSuccess() bool {
@@ -357,7 +538,7 @@ type GetProductReq struct {
 
 func (x *GetProductReq) Reset() {
 	*x = GetProductReq{}
-	mi := &file_api_product_v1_product_proto_msgTypes[6]
+	mi := &file_api_product_v1_product_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +550,7 @@ func (x *GetProductReq) String() string {
 func (*GetProductReq) ProtoMessage() {}
 
 func (x *GetProductReq) ProtoReflect() protoreflect.Message {
-	mi := &file_api_product_v1_product_proto_msgTypes[6]
+	mi := &file_api_product_v1_product_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -382,7 +563,7 @@ func (x *GetProductReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductReq.ProtoReflect.Descriptor instead.
 func (*GetProductReq) Descriptor() ([]byte, []int) {
-	return file_api_product_v1_product_proto_rawDescGZIP(), []int{6}
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetProductReq) GetProductID() int64 {
@@ -403,7 +584,7 @@ type GetProductResp struct {
 
 func (x *GetProductResp) Reset() {
 	*x = GetProductResp{}
-	mi := &file_api_product_v1_product_proto_msgTypes[7]
+	mi := &file_api_product_v1_product_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -415,7 +596,7 @@ func (x *GetProductResp) String() string {
 func (*GetProductResp) ProtoMessage() {}
 
 func (x *GetProductResp) ProtoReflect() protoreflect.Message {
-	mi := &file_api_product_v1_product_proto_msgTypes[7]
+	mi := &file_api_product_v1_product_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -428,7 +609,7 @@ func (x *GetProductResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductResp.ProtoReflect.Descriptor instead.
 func (*GetProductResp) Descriptor() ([]byte, []int) {
-	return file_api_product_v1_product_proto_rawDescGZIP(), []int{7}
+	return file_api_product_v1_product_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetProductResp) GetProductID() int64 {
@@ -459,9 +640,17 @@ const file_api_product_v1_product_proto_rawDesc = "" +
 	"\x1capi/product/v1/product.proto\x12\x0eapi.product.v1\x1a\x1cgoogle/api/annotations.proto\"$\n" +
 	"\n" +
 	"SeckillReq\x12\x16\n" +
-	"\x06userID\x18\x01 \x01(\x03R\x06userID\"7\n" +
+	"\x06userID\x18\x01 \x01(\x03R\x06userID\"U\n" +
 	"\vSeckillResp\x12(\n" +
-	"\x03res\x18\x01 \x01(\x0e2\x16.api.product.v1.ResultR\x03res\"J\n" +
+	"\x03res\x18\x01 \x01(\x0e2\x16.api.product.v1.ResultR\x03res\x12\x1c\n" +
+	"\trequestID\x18\x02 \x01(\tR\trequestID\"3\n" +
+	"\x13GetSeckillStatusReq\x12\x1c\n" +
+	"\trequestID\x18\x01 \x01(\tR\trequestID\"\x9b\x01\n" +
+	"\x14GetSeckillStatusResp\x125\n" +
+	"\x06status\x18\x01 \x01(\x0e2\x1d.api.product.v1.SeckillStatusR\x06status\x12\x16\n" +
+	"\x06reason\x18\x02 \x01(\tR\x06reason\x12\x16\n" +
+	"\x06userID\x18\x03 \x01(\x03R\x06userID\x12\x1c\n" +
+	"\tproductID\x18\x04 \x01(\x03R\tproductID\"J\n" +
 	"\x12DeductStockSagaReq\x12\x1c\n" +
 	"\tproductID\x18\x01 \x01(\x03R\tproductID\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\x05R\x06amount\"/\n" +
@@ -477,12 +666,22 @@ const file_api_product_v1_product_proto_rawDesc = "" +
 	"\x0eGetProductResp\x12\x1c\n" +
 	"\tproductID\x18\x01 \x01(\x03R\tproductID\x12\x14\n" +
 	"\x05price\x18\x02 \x01(\x05R\x05price\x12\x14\n" +
-	"\x05stock\x18\x03 \x01(\x05R\x05stock*\"\n" +
+	"\x05stock\x18\x03 \x01(\x05R\x05stock*.\n" +
 	"\x06Result\x12\v\n" +
 	"\aSUCCESS\x10\x00\x12\v\n" +
-	"\aFAILURE\x10\x012\xa6\x03\n" +
+	"\aFAILURE\x10\x01\x12\n" +
+	"\n" +
+	"\x06QUEUED\x10\x02*\xbb\x01\n" +
+	"\rSeckillStatus\x12\x1a\n" +
+	"\x16SECKILL_STATUS_WAITING\x10\x00\x12\x1d\n" +
+	"\x19SECKILL_STATUS_PROCESSING\x10\x01\x12\x1a\n" +
+	"\x16SECKILL_STATUS_SUCCESS\x10\x02\x12\x1b\n" +
+	"\x17SECKILL_STATUS_SOLD_OUT\x10\x03\x12\x1b\n" +
+	"\x17SECKILL_STATUS_DEGRADED\x10\x04\x12\x19\n" +
+	"\x15SECKILL_STATUS_FAILED\x10\x052\xa5\x04\n" +
 	"\aProduct\x12[\n" +
-	"\aSeckill\x12\x1a.api.product.v1.SeckillReq\x1a\x1b.api.product.v1.SeckillResp\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/api/seckill\x12\x84\x01\n" +
+	"\aSeckill\x12\x1a.api.product.v1.SeckillReq\x1a\x1b.api.product.v1.SeckillResp\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/api/seckill\x12}\n" +
+	"\x10GetSeckillStatus\x12#.api.product.v1.GetSeckillStatusReq\x1a$.api.product.v1.GetSeckillStatusResp\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/seckill/status\x12\x84\x01\n" +
 	"\x0fDeductStockSaga\x12\".api.product.v1.DeductStockSagaReq\x1a#.api.product.v1.DeductStockSagaResp\"(\x82\xd3\xe4\x93\x02\":\x01*\"\x1d/api/seckill/saga/deductStock\x12Q\n" +
 	"\fRestoreStock\x12\x1f.api.product.v1.RestoreStockReq\x1a .api.product.v1.RestoreStockResp\x12d\n" +
 	"\n" +
@@ -501,34 +700,40 @@ func file_api_product_v1_product_proto_rawDescGZIP() []byte {
 	return file_api_product_v1_product_proto_rawDescData
 }
 
-var file_api_product_v1_product_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_product_v1_product_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_api_product_v1_product_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_api_product_v1_product_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_api_product_v1_product_proto_goTypes = []any{
-	(Result)(0),                 // 0: api.product.v1.Result
-	(*SeckillReq)(nil),          // 1: api.product.v1.SeckillReq
-	(*SeckillResp)(nil),         // 2: api.product.v1.SeckillResp
-	(*DeductStockSagaReq)(nil),  // 3: api.product.v1.DeductStockSagaReq
-	(*DeductStockSagaResp)(nil), // 4: api.product.v1.DeductStockSagaResp
-	(*RestoreStockReq)(nil),     // 5: api.product.v1.RestoreStockReq
-	(*RestoreStockResp)(nil),    // 6: api.product.v1.RestoreStockResp
-	(*GetProductReq)(nil),       // 7: api.product.v1.GetProductReq
-	(*GetProductResp)(nil),      // 8: api.product.v1.GetProductResp
+	(Result)(0),                  // 0: api.product.v1.Result
+	(SeckillStatus)(0),           // 1: api.product.v1.SeckillStatus
+	(*SeckillReq)(nil),           // 2: api.product.v1.SeckillReq
+	(*SeckillResp)(nil),          // 3: api.product.v1.SeckillResp
+	(*GetSeckillStatusReq)(nil),  // 4: api.product.v1.GetSeckillStatusReq
+	(*GetSeckillStatusResp)(nil), // 5: api.product.v1.GetSeckillStatusResp
+	(*DeductStockSagaReq)(nil),   // 6: api.product.v1.DeductStockSagaReq
+	(*DeductStockSagaResp)(nil),  // 7: api.product.v1.DeductStockSagaResp
+	(*RestoreStockReq)(nil),      // 8: api.product.v1.RestoreStockReq
+	(*RestoreStockResp)(nil),     // 9: api.product.v1.RestoreStockResp
+	(*GetProductReq)(nil),        // 10: api.product.v1.GetProductReq
+	(*GetProductResp)(nil),       // 11: api.product.v1.GetProductResp
 }
 var file_api_product_v1_product_proto_depIdxs = []int32{
-	0, // 0: api.product.v1.SeckillResp.res:type_name -> api.product.v1.Result
-	1, // 1: api.product.v1.Product.Seckill:input_type -> api.product.v1.SeckillReq
-	3, // 2: api.product.v1.Product.DeductStockSaga:input_type -> api.product.v1.DeductStockSagaReq
-	5, // 3: api.product.v1.Product.RestoreStock:input_type -> api.product.v1.RestoreStockReq
-	7, // 4: api.product.v1.Product.GetProduct:input_type -> api.product.v1.GetProductReq
-	2, // 5: api.product.v1.Product.Seckill:output_type -> api.product.v1.SeckillResp
-	4, // 6: api.product.v1.Product.DeductStockSaga:output_type -> api.product.v1.DeductStockSagaResp
-	6, // 7: api.product.v1.Product.RestoreStock:output_type -> api.product.v1.RestoreStockResp
-	8, // 8: api.product.v1.Product.GetProduct:output_type -> api.product.v1.GetProductResp
-	5, // [5:9] is the sub-list for method output_type
-	1, // [1:5] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0,  // 0: api.product.v1.SeckillResp.res:type_name -> api.product.v1.Result
+	1,  // 1: api.product.v1.GetSeckillStatusResp.status:type_name -> api.product.v1.SeckillStatus
+	2,  // 2: api.product.v1.Product.Seckill:input_type -> api.product.v1.SeckillReq
+	4,  // 3: api.product.v1.Product.GetSeckillStatus:input_type -> api.product.v1.GetSeckillStatusReq
+	6,  // 4: api.product.v1.Product.DeductStockSaga:input_type -> api.product.v1.DeductStockSagaReq
+	8,  // 5: api.product.v1.Product.RestoreStock:input_type -> api.product.v1.RestoreStockReq
+	10, // 6: api.product.v1.Product.GetProduct:input_type -> api.product.v1.GetProductReq
+	3,  // 7: api.product.v1.Product.Seckill:output_type -> api.product.v1.SeckillResp
+	5,  // 8: api.product.v1.Product.GetSeckillStatus:output_type -> api.product.v1.GetSeckillStatusResp
+	7,  // 9: api.product.v1.Product.DeductStockSaga:output_type -> api.product.v1.DeductStockSagaResp
+	9,  // 10: api.product.v1.Product.RestoreStock:output_type -> api.product.v1.RestoreStockResp
+	11, // 11: api.product.v1.Product.GetProduct:output_type -> api.product.v1.GetProductResp
+	7,  // [7:12] is the sub-list for method output_type
+	2,  // [2:7] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_api_product_v1_product_proto_init() }
@@ -541,8 +746,8 @@ func file_api_product_v1_product_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_product_v1_product_proto_rawDesc), len(file_api_product_v1_product_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   8,
+			NumEnums:      2,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

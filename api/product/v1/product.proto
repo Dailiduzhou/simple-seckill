@@ -15,6 +15,12 @@ service Product {
       body: "*"
     };
   }
+  rpc GetSeckillStatus(GetSeckillStatusReq) returns (GetSeckillStatusResp) {
+    option (google.api.http) = {
+      post: "/api/seckill/status"
+      body: "*"
+    };
+  }
   rpc DeductStockSaga(DeductStockSagaReq) returns (DeductStockSagaResp) {
     option (google.api.http) = {
       post: "/api/seckill/saga/deductStock"
@@ -34,6 +40,16 @@ service Product {
 enum Result {
   SUCCESS = 0;
   FAILURE = 1;
+  QUEUED = 2;
+}
+
+enum SeckillStatus {
+  SECKILL_STATUS_WAITING = 0;
+  SECKILL_STATUS_PROCESSING = 1;
+  SECKILL_STATUS_SUCCESS = 2;
+  SECKILL_STATUS_SOLD_OUT = 3;
+  SECKILL_STATUS_DEGRADED = 4;
+  SECKILL_STATUS_FAILED = 5;
 }
 
 message SeckillReq {
@@ -41,6 +57,18 @@ message SeckillReq {
 }
 message SeckillResp {
   Result res = 1;
+  string requestID = 2;
+}
+
+message GetSeckillStatusReq {
+  string requestID = 1;
+}
+
+message GetSeckillStatusResp {
+  SeckillStatus status = 1;
+  string reason = 2;
+  int64 userID = 3;
+  int64 productID = 4;
 }
 
 message DeductStockSagaReq {

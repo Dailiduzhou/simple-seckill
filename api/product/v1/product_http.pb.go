@@ -21,17 +21,20 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationProductDeductStockSaga = "/api.product.v1.Product/DeductStockSaga"
 const OperationProductGetProduct = "/api.product.v1.Product/GetProduct"
+const OperationProductGetSeckillStatus = "/api.product.v1.Product/GetSeckillStatus"
 const OperationProductSeckill = "/api.product.v1.Product/Seckill"
 
 type ProductHTTPServer interface {
 	DeductStockSaga(context.Context, *DeductStockSagaReq) (*DeductStockSagaResp, error)
 	GetProduct(context.Context, *GetProductReq) (*GetProductResp, error)
+	GetSeckillStatus(context.Context, *GetSeckillStatusReq) (*GetSeckillStatusResp, error)
 	Seckill(context.Context, *SeckillReq) (*SeckillResp, error)
 }
 
 func RegisterProductHTTPServer(s *http.Server, srv ProductHTTPServer) {
 	r := s.Route("/")
 	r.POST("/api/seckill", _Product_Seckill0_HTTP_Handler(srv))
+	r.POST("/api/seckill/status", _Product_GetSeckillStatus0_HTTP_Handler(srv))
 	r.POST("/api/seckill/saga/deductStock", _Product_DeductStockSaga0_HTTP_Handler(srv))
 	r.POST("/api/product", _Product_GetProduct0_HTTP_Handler(srv))
 }
@@ -54,6 +57,28 @@ func _Product_Seckill0_HTTP_Handler(srv ProductHTTPServer) func(ctx http.Context
 			return err
 		}
 		reply := out.(*SeckillResp)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Product_GetSeckillStatus0_HTTP_Handler(srv ProductHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetSeckillStatusReq
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationProductGetSeckillStatus)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetSeckillStatus(ctx, req.(*GetSeckillStatusReq))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetSeckillStatusResp)
 		return ctx.Result(200, reply)
 	}
 }
@@ -105,6 +130,7 @@ func _Product_GetProduct0_HTTP_Handler(srv ProductHTTPServer) func(ctx http.Cont
 type ProductHTTPClient interface {
 	DeductStockSaga(ctx context.Context, req *DeductStockSagaReq, opts ...http.CallOption) (rsp *DeductStockSagaResp, err error)
 	GetProduct(ctx context.Context, req *GetProductReq, opts ...http.CallOption) (rsp *GetProductResp, err error)
+	GetSeckillStatus(ctx context.Context, req *GetSeckillStatusReq, opts ...http.CallOption) (rsp *GetSeckillStatusResp, err error)
 	Seckill(ctx context.Context, req *SeckillReq, opts ...http.CallOption) (rsp *SeckillResp, err error)
 }
 
@@ -134,6 +160,19 @@ func (c *ProductHTTPClientImpl) GetProduct(ctx context.Context, in *GetProductRe
 	pattern := "/api/product"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationProductGetProduct))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *ProductHTTPClientImpl) GetSeckillStatus(ctx context.Context, in *GetSeckillStatusReq, opts ...http.CallOption) (*GetSeckillStatusResp, error) {
+	var out GetSeckillStatusResp
+	pattern := "/api/seckill/status"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationProductGetSeckillStatus))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
